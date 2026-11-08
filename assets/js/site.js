@@ -21,7 +21,7 @@
   function ease(t) { return t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; }
   // Soft ease: half linear, half ease-in-out. Shots never fully stop at a seam, so the camera keeps flowing.
   function soft(t) { return .45 * t + .55 * ease(t); }
-  function sm(t) { t = clamp(t, 0, 1); return t * t * (3 - 2 * t); }
+  function sm(t) { t = clamp(t, 0, 1); return t * t * t * (t * (t * 6 - 15) + 10); }
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function slug(s) { return String(s || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); }
   function fmt(n) { return Number(n).toLocaleString('en-US'); }
@@ -107,7 +107,7 @@
     backseat: { file: 'backseat', w: 1672, h: 941, focus: [836, 470] },
     bonnet: { file: 'bonnet', w: 1448, h: 1086, focus: [780, 470] },
     headon: { file: 'headon', w: 1448, h: 1086, focus: [724, 470] },
-    engine: { file: 'engine', w: 1276, h: 960, focus: [600, 430] },
+    engine: { file: 'engine', w: 1448, h: 1086, focus: [720, 560] },
     steer: { file: 'corner', w: 1448, h: 1086, focus: [930, 640] },
     passenger: { file: 'passenger', w: 1536, h: 1024, focus: [1010, 640] },
     glass: { file: 'rear', w: 1672, h: 941, focus: [560, 420] },
@@ -120,10 +120,14 @@
     headon: '<div class="hood" style="left:60px;top:240px;width:1330px;height:238px">' +
       '<div class="hood-bay"><img src="assets/photos/engine.webp" alt="" decoding="async"></div>' +
       '<div class="hood-flap"><i class="hood-top"></i><i class="hood-under"></i></div></div>',
-    rear: '<div class="ov ov-plate" data-detail="plate" style="left:1233px;top:410px;width:154px;height:66px"><span>31 CARTIO</span><i>E31 SPECIALIST</i></div>',
-    cluster: '<a class="ov ov-odo" data-bind="tel" href="tel:+18183955765" aria-label="Call us" style="left:982px;top:413px;width:66px;height:29px" id="odo-a"></a>' +
-      '<a class="ov ov-odo" data-bind="tel" href="tel:+18183955765" aria-label="Call us" style="left:1059px;top:414px;width:61px;height:29px" id="odo-b"></a>',
-    console: '<a class="ov ov-lcd" id="obc" href="https://www.instagram.com/31bycartio/" target="_blank" rel="noopener" aria-label="31 by Cartio on Instagram" style="left:189px;top:514px;width:442px;height:51px;transform:rotate(-1deg)"><span id="obc-text">31 BY CARTIO</span><i>ST</i></a>',
+    // data-quad = the four corners (top-left, top-right, bottom-right, bottom-left) measured on the photo;
+    // the element is drawn flat at its own size and mapped onto those corners in perspective.
+    rear: '<div class="ov ov-plate" data-quad="1233,412 1383,414 1395,475.5 1240.5,481" style="width:240px;height:120px"><b>California</b><span>31 CARTIO</span><i>E31 SPECIALIST</i>' +
+      '<u style="left:19%;top:8%"></u><u style="right:19%;top:8%"></u><u style="left:19%;bottom:8%"></u><u style="right:19%;bottom:8%"></u></div>',
+    cluster: '<a class="ov ov-odo-link" data-bind="tel" data-lit="odo" href="tel:+18183955765" aria-label="Call us" style="left:972px;top:402px;width:160px;height:52px">' +
+      '<span class="odo-w" style="left:8px;top:10px;width:70px;height:29px;-webkit-mask-image:url(assets/img/mask-odo.png);mask-image:url(assets/img/mask-odo.png)"><span class="ov-odo" id="odo-a" data-quad="3.1,3 67.4,4.7 66.9,25.6 3.6,23.7" style="width:128px;height:42px"></span></span>' +
+      '<span class="odo-w" style="left:87px;top:14px;width:62px;height:28px"><span class="ov-odo" id="odo-b" data-quad="2.7,2.6 59.6,5.4 59.3,26.1 2.1,22.6" style="width:114px;height:40px"></span></span></a>',
+    console: '<a class="ov ov-lcd" id="obc" data-lit="radio" data-quad="190,520 619,512 618,553.5 190,565" href="https://www.instagram.com/31bycartio/" target="_blank" rel="noopener" aria-label="31 by Cartio on Instagram" style="width:430px;height:48px"><span id="obc-text">31 BY CARTIO</span><i>ST</i></a>',
     backseat: '<div class="ov ov-mirror" style="left:726px;top:127px;width:226px;height:42px"><span>31 BY CARTIO</span></div>' +
       '<div class="ov ov-emboss" style="left:130px;top:752px;width:172px;height:74px"><i class="e-sh"></i><i class="e-hi"></i><i class="e-base"></i></div>'
   };
@@ -166,47 +170,47 @@
     hold('heroOff', CAM.hero, 55, { cap: 'hero', ch: 'hero' }),
     x({ s: 'heroOff', c0: CAM.hero, c1: CAM.hero, o: [.62, .8] }, { s: 'heroOn', c0: CAM.hero, c1: CAM.hero, o: [.32, .58] }, 45, { flash: .4 }),
     move('heroOn', CAM.hero, CAM.podNear, 40),
-    xin('heroOn', CAM.podNear, CAM.podP, 'lamp', REST, 55),
+    xin('heroOn', CAM.podNear, CAM.podP, 'lamp', REST, 80),
     move('lamp', REST, DRIFT, 45, { cap: 'lamp', lin: 1 }),
-    track('lamp', 'corner', 60),
+    track('lamp', 'corner', 90),
     move('corner', REST, DRIFT, 45, { cap: 'corner', lin: 1 }),
-    track('corner', 'rearwheel', 60),
-    xout('rearwheel', REST, 'rear', CAM.rwP, REST, 65),
+    track('corner', 'rearwheel', 90),
+    xout('rearwheel', REST, 'rear', CAM.rwP, REST, 90),
     move('rear', REST, R({ k: .95 }), 55, { cap: 'step', ch: 'inside', detail: 'plate', lin: 1 }),
-    xin('rear', R({ k: .95 }), CAM.winP, 'cabin', REST, 65),
+    xin('rear', R({ k: .95 }), CAM.winP, 'cabin', REST, 90),
     move('cabin', REST, R({ k: .95 }), 40, { cap: 'look', lin: 1 }),
-    xin('cabin', R({ k: .95 }), CAM.clP, 'cluster', REST, 55),
+    xin('cabin', R({ k: .95 }), CAM.clP, 'cluster', REST, 80),
     move('cluster', REST, CAM.odo, 35, { cap: 'odo' }),
     hold('cluster', CAM.odo, 55, { cap: 'odo', ch: 'gauges', detail: 'odo' }),
-    xout('cluster', CAM.odo, 'driver', CAM.odoP, REST, 65),
+    xout('cluster', CAM.odo, 'driver', CAM.odoP, REST, 90),
     move('driver', REST, CAM.drvConsole, 35),
-    xin('driver', CAM.drvConsole, CAM.radioP, 'console', CAM.radio, 55, { cap: 'radio' }),
+    xin('driver', CAM.drvConsole, CAM.radioP, 'console', CAM.radio, 80, { cap: 'radio' }),
     hold('console', CAM.radio, 60, { cap: 'radio', ch: 'radio', detail: 'radio' }),
-    xout('console', CAM.radio, 'backseat', CAM.bsRadioP, REST, 65),
+    xout('console', CAM.radio, 'backseat', CAM.bsRadioP, REST, 90),
     move('backseat', REST, CAM.mirror, 35, { cap: 'mirror' }),
     hold('backseat', CAM.mirror, 40, { cap: 'mirror', detail: 'mirror' }),
     move('backseat', CAM.mirror, CAM.leather, 40, { cap: 'leather' }),
     hold('backseat', CAM.leather, 50, { cap: 'leather', ch: 'leather', detail: 'leather' }),
-    x({ s: 'backseat', c0: CAM.leather, c1: CAM.leatherIn, o: [.3, .8], blur: 1 }, { s: 'bonnet', c0: R({ k: .9, dx: -.05 }), c1: CAM.kb0, box: 'full', box1: 'split', o: [.06, .52], blur: 1 }, 60),
+    x({ s: 'backseat', c0: CAM.leather, c1: CAM.leatherIn, o: [.3, .8], blur: 1 }, { s: 'bonnet', c0: R({ k: .9, dx: -.05 }), c1: CAM.kb0, box: 'full', box1: 'split', o: [.06, .52], blur: 1 }, 85),
     move('bonnet', CAM.kb0, CAM.kb1, 85, { box: 'split', cap: 'paint', ch: 'paint' }),
-    wipe('bonnet', 'headon', 45),
+    wipe('bonnet', 'headon', 70),
     move('headon', CAM.kb0, CAM.kb1, 45, { box: 'split', cap: 'engines', ch: 'engines' }),
-    move('headon', CAM.kb1, K(724, 500, 1000), 50, { box: 'split', cap: 'engines', hood: 1 }),
-    x({ s: 'headon', c0: K(724, 500, 1000), c1: K(724, 370, 430), box: 'split', o: [.55, .92], blur: 1 }, { s: 'engine', c0: R({ k: 1 }), c1: R({ k: .95 }), box: 'split', o: [.42, .86], blur: 1 }, 55, { cap: 'engines' }),
-    move('engine', R({ k: .95 }), CAM.kb1, 55, { box: 'split', cap: 'engines' }),
-    wipe('engine', 'steer', 45),
+    move('headon', CAM.kb1, K(724, 500, 1000), 130, { box: 'split', cap: 'engines', hood: 1 }),
+    x({ s: 'headon', c0: K(724, 500, 1000), c1: K(724, 380, 470), box: 'split', o: [.5, .95], blur: 1 }, { s: 'engine', c0: R({ k: 1 }), c1: R({ k: .94 }), box: 'split', o: [.36, .88], blur: 1 }, 90, { cap: 'engines' }),
+    move('engine', R({ k: .94 }), CAM.kb1, 60, { box: 'split', cap: 'engines' }),
+    wipe('engine', 'steer', 70),
     move('steer', CAM.kb0, CAM.kb1, 85, { box: 'split', cap: 'steering', ch: 'steering' }),
-    wipe('steer', 'passenger', 45),
+    wipe('steer', 'passenger', 70),
     move('passenger', CAM.kb0, CAM.kb1, 85, { box: 'split', cap: 'interior', ch: 'interior' }),
-    wipe('passenger', 'glass', 45),
+    wipe('passenger', 'glass', 70),
     move('glass', CAM.kb0, CAM.kb1, 85, { box: 'split', cap: 'sunroof', ch: 'sunroof' }),
-    wipe('glass', 'dash', 45),
+    wipe('glass', 'dash', 70),
     move('dash', CAM.kb0, CAM.kb1, 85, { box: 'split', cap: 'wiring', ch: 'wiring' }),
-    x({ s: 'dash', c0: CAM.kb1, c1: CAM.kb1, box: 'split', box1: 'full', o: [.55, .95] }, { s: 'stock', c0: R({ k: 1.12 }), c1: CAM.stock, o: [.45, .9] }, 60),
+    x({ s: 'dash', c0: CAM.kb1, c1: CAM.kb1, box: 'split', box1: 'full', o: [.55, .95] }, { s: 'stock', c0: R({ k: 1.12 }), c1: CAM.stock, o: [.4, .92], blur: 1 }, 85),
     hold('stock', CAM.stock, 150, { cap: 'stock', ch: 'stock', lineup: true, dim: .6 }),
-    x({ s: 'stock', c0: CAM.stock, c1: R({ k: .9 }), o: [.25, .8], blur: 1 }, { s: 'story', c0: R({ k: .9, dx: .05 }), c1: CAM.kb0, box: 'full', box1: 'story', o: [.05, .5], blur: 1 }, 60),
+    x({ s: 'stock', c0: CAM.stock, c1: R({ k: .9 }), o: [.25, .8], blur: 1 }, { s: 'story', c0: R({ k: .9, dx: .05 }), c1: CAM.kb0, box: 'full', box1: 'story', o: [.05, .5], blur: 1 }, 85),
     move('story', CAM.kb0, CAM.kb1, 75, { box: 'story', cap: 'story', ch: 'story' }),
-    x({ s: 'story', c0: CAM.kb1, c1: CAM.final0, box: 'story', box1: 'full', o: [.6, .9] }, { s: 'finale', c0: CAM.final0, c1: CAM.final0, o: [.5, .8] }, 60, { flash: .55 }),
+    x({ s: 'story', c0: CAM.kb1, c1: CAM.final0, box: 'story', box1: 'full', o: [.6, .9] }, { s: 'finale', c0: CAM.final0, c1: CAM.final0, o: [.45, .85], blur: 1 }, 85, { flash: .55 }),
     move('finale', CAM.final0, CAM.final1, 80, { cap: 'contact', ch: 'contact', end: true, dim: .45 })
   ];
   var CHAPTERS = [
@@ -252,6 +256,29 @@
   function drain() { var it = loadQueue.shift(); if (!it) return; it[0].onload = it[0].onerror = function () { setTimeout(drain, 0); }; it[0].src = it[1]; }
   window.addEventListener('load', function () { drain(); drain(); drain(); });
   setTimeout(function () { drain(); drain(); }, 2500);
+
+  // Projective transform that maps a w x h box onto four measured corners (CSS matrix3d).
+  function homography(w, h, q) {
+    var src = [[0, 0], [w, 0], [w, h], [0, h]], A = [], i, j, k;
+    for (i = 0; i < 4; i++) {
+      var x0 = src[i][0], y0 = src[i][1], X = q[i][0], Y = q[i][1];
+      A.push([x0, y0, 1, 0, 0, 0, -x0 * X, -y0 * X, X]);
+      A.push([0, 0, 0, x0, y0, 1, -x0 * Y, -y0 * Y, Y]);
+    }
+    for (i = 0; i < 8; i++) {
+      var p = i; for (j = i + 1; j < 8; j++) if (Math.abs(A[j][i]) > Math.abs(A[p][i])) p = j;
+      var tmp = A[i]; A[i] = A[p]; A[p] = tmp;
+      for (j = i + 1; j < 8; j++) { var f = A[j][i] / A[i][i]; for (k = i; k < 9; k++) A[j][k] -= f * A[i][k]; }
+    }
+    var hh = new Array(8);
+    for (i = 7; i >= 0; i--) { var sum = A[i][8]; for (j = i + 1; j < 8; j++) sum -= A[i][j] * hh[j]; hh[i] = sum / A[i][i]; }
+    return [hh[0], hh[3], 0, hh[6], hh[1], hh[4], 0, hh[7], 0, 0, 1, 0, hh[2], hh[5], 0, 1];
+  }
+  $$('[data-quad]').forEach(function (el) {
+    var q = el.getAttribute('data-quad').split(' ').map(function (p) { return p.split(',').map(Number); });
+    el.style.left = '0px'; el.style.top = '0px'; el.style.transformOrigin = '0 0';
+    el.style.transform = 'matrix3d(' + homography(parseFloat(el.style.width), parseFloat(el.style.height), q).map(function (v) { return +v.toFixed(8); }).join(',') + ')';
+  });
 
   var embossSrc = (window.__ASSET__ && window.__ASSET__.badge) || 'assets/img/logo-badge-400.png';
   $$('.ov-emboss i').forEach(function (i) { i.style.webkitMaskImage = i.style.maskImage = 'url("' + embossSrc + '")'; });
@@ -441,7 +468,11 @@
   var foundSet = {};
   try { foundSet = JSON.parse(localStorage.getItem('31-found') || '{}') || {}; } catch (e) { foundSet = {}; }
   var found = $('#found'), armTimer = null, armed = '';
-  function arm(k) { if (k === armed) return; armed = k; clearTimeout(armTimer); if (k) armTimer = setTimeout(function () { markFound(k); }, 900); }
+  var NOHOVER = window.matchMedia && matchMedia('(hover: none)').matches;
+  function arm(k) {
+    if (k === armed) return;
+    if (NOHOVER) $$('[data-lit]').forEach(function (el) { el.classList.toggle('lit', el.getAttribute('data-lit') === k); });
+    armed = k; clearTimeout(armTimer); if (k) armTimer = setTimeout(function () { markFound(k); }, 900); }
   function markFound(k) {
     if (!DETAILS[k] || foundSet[k]) return;
     foundSet[k] = 1;
@@ -484,8 +515,8 @@
   }
   function loop() {
     if (!running) return;
-    cur += (target - cur) * (REDUCE ? 1 : .085);
-    if (Math.abs(target - cur) < .002) cur = target;
+    cur += (target - cur) * (REDUCE ? 1 : .072);
+    if (Math.abs(target - cur) < .001) cur = target;
     render(cur);
     if (cur === target) { running = false; return; }
     requestAnimationFrame(loop);
@@ -512,7 +543,7 @@
     var o = e.target.closest('[data-open]');
     if (o) { e.preventDefault(); openPanel(o.dataset.open, o.dataset.need); return; }
     // The odometer and radio are real links; tapping them also counts as finding them.
-    if (e.target.closest('.ov-odo')) markFound('odo');
+    if (e.target.closest('.ov-odo-link')) markFound('odo');
     if (e.target.closest('.ov-lcd')) markFound('radio');
     var c = e.target.closest('[data-car]');
     if (c) { e.preventDefault(); openPanel('car', c.dataset.car); }

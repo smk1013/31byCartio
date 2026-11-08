@@ -422,7 +422,7 @@ a.ov { text-decoration: none; cursor: pointer; }
 .hood.on { visibility: visible; }
 .hood-bay, .hood-top { position: absolute; inset: 0; clip-path: polygon(14.9% 0, 88.2% 0, 99.6% 100%, .4% 100%); -webkit-clip-path: polygon(14.9% 0, 88.2% 0, 99.6% 100%, .4% 100%); }
 .hood-bay { background: #050505; overflow: hidden; }
-.hood-bay img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 46%; opacity: calc(.35 + var(--h, 0) * .65); filter: brightness(calc(.45 + var(--h, 0) * .55)); }
+.hood-bay img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 50%; opacity: calc(.35 + var(--h, 0) * .65); filter: brightness(calc(.45 + var(--h, 0) * .55)); }
 .hood-bay::after { content: ""; position: absolute; inset: 0; background: linear-gradient(rgba(0,0,0,.95), rgba(0,0,0,.4) 34%, rgba(0,0,0,.08) 70%, rgba(0,0,0,.45)), radial-gradient(70% 120% at 50% 70%, transparent 40%, rgba(0,0,0,.75)); opacity: calc(1 - var(--h, 0) * .4); }
 .hood-flap { position: absolute; inset: 0; }
 .hood-top { background: url("../photos/headon.webp") -60px -240px / 1448px 1086px no-repeat; transform-origin: 50% 0; filter: brightness(calc(1 - var(--h, 0) * 1.2)); }
@@ -460,3 +460,36 @@ a.ov { text-decoration: none; cursor: pointer; }
   .tl li { grid-template-columns: 1fr; gap: 8px; padding: 18px 0; }
   .tl-when { padding-top: 0; }
 }
+
+/* ---------- displays and plate fitted into the photos ---------- */
+.ov[data-quad], .ov-odo { transform-origin: 0 0; }
+.ov-odo-link { display: block; }
+.odo-w { position: absolute; display: block; -webkit-mask-size: 100% 100%; mask-size: 100% 100%; }
+.ov-odo { position: absolute; left: 0; top: 0; display: block; padding: 5px 7px 4px 5px; border-radius: 2px;
+  background: radial-gradient(130% 160% at 45% 40%, #4a1606, #2b0c03 70%); box-shadow: inset 0 3px 4px rgba(0,0,0,.75), inset 0 -1px 2px rgba(0,0,0,.6);
+  transition: background .45s, box-shadow .45s, filter .45s; filter: brightness(.74) saturate(.92); }
+.ov-odo .seg7 .on { fill: #ff7a2e; filter: drop-shadow(0 0 1px rgba(255,90,20,.9)) drop-shadow(0 0 3px rgba(255,90,20,.45)); transition: fill .45s, filter .45s; }
+.ov-odo .seg7 .off { fill: rgba(255,110,40,.06); }
+.ov-odo-link::after { content: ""; position: absolute; inset: -30% -12%; border-radius: 50%; pointer-events: none; opacity: 0; transition: opacity .5s;
+  background: radial-gradient(closest-side, rgba(255,110,40,.4), rgba(255,90,20,.12) 55%, transparent); mix-blend-mode: screen; }
+.ov-odo-link:hover .ov-odo, .ov-odo-link:focus-visible .ov-odo, .ov-odo-link.lit .ov-odo { filter: brightness(1.18) saturate(1.1); background: radial-gradient(130% 160% at 45% 40%, #6a2209, #3a1004 70%); }
+.ov-odo-link:hover .seg7 .on, .ov-odo-link:focus-visible .seg7 .on, .ov-odo-link.lit .seg7 .on { fill: #ffb27a; filter: drop-shadow(0 0 1px #fff0e0) drop-shadow(0 0 3px rgba(255,120,40,1)) drop-shadow(0 0 8px rgba(255,90,20,.75)); }
+.ov-odo-link:hover::after, .ov-odo-link:focus-visible::after, .ov-odo-link.lit::after { opacity: 1; }
+.ov-odo-link:focus-visible { outline: none; }
+
+.ov-lcd { transform: none; padding: 0 16px 0 18px; filter: brightness(.8); transition: filter .45s, box-shadow .45s; box-shadow: inset 0 0 8px #000, 0 0 0 rgba(255,50,20,0); }
+.ov-lcd span { color: #ff4a2c; text-shadow: 0 0 1.5px #ff2200, 0 0 5px rgba(255,50,20,.45); transition: color .45s, text-shadow .45s, opacity .16s; }
+.ov-lcd:hover, .ov-lcd:focus-visible, .ov-lcd.lit { filter: brightness(1.2); box-shadow: inset 0 0 8px #000, 0 0 26px rgba(255,60,20,.35), 0 0 60px rgba(255,60,20,.18); }
+.ov-lcd:hover span, .ov-lcd:focus-visible span, .ov-lcd.lit span { color: #ff8a6a; text-shadow: 0 0 1px #fff2ea, 0 0 3px #ff3a10, 0 0 10px rgba(255,60,20,.9), 0 0 22px rgba(255,50,20,.5); }
+.ov-lcd:focus-visible { outline: none; }
+
+/* California legacy-style black plate, mapped into the plate recess */
+.ov-plate { border-radius: 7px; overflow: hidden; display: grid; align-content: center; justify-items: center;
+  background: linear-gradient(170deg, #1d1d1c, #0c0c0c 55%, #141413);
+  box-shadow: inset 0 0 0 3px #232321, inset 0 0 0 5px #0b0b0b, inset 0 0 0 6px rgba(255,255,255,.05), 0 1px 2px rgba(0,0,0,.9); }
+.ov-plate::after { content: ""; position: absolute; inset: 0; background: linear-gradient(100deg, rgba(255,240,220,.1), transparent 38%, transparent 70%, rgba(255,220,180,.05)); pointer-events: none; }
+.ov-plate b { position: absolute; top: 11px; left: 0; right: 0; text-align: center; font: italic 400 15px/1 var(--serif); color: rgba(226,200,150,.7); letter-spacing: .04em; }
+.ov-plate span { margin-top: 8px; font: 700 50px/1 var(--cond); letter-spacing: .05em; color: #dcc595; text-shadow: 0 -1.5px 0 rgba(0,0,0,.95), 0 1.5px 0 rgba(255,240,210,.22); }
+.ov-plate i { position: absolute; bottom: 12px; left: 0; right: 0; margin: 0; text-align: center; font: 700 10px/1 var(--cond); font-style: normal; letter-spacing: .32em; color: rgba(211,180,138,.75); }
+.ov-plate u { position: absolute; width: 10px; height: 10px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #e6e0d6, #8c867d 45%, #2c2a27 75%); box-shadow: 0 1px 1px rgba(0,0,0,.8); }
+.ov-plate u::after { content: ""; position: absolute; left: 2px; right: 2px; top: 4.5px; height: 1px; background: rgba(0,0,0,.55); transform: rotate(-25deg); }
