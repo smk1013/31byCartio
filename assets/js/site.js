@@ -11,6 +11,8 @@
   var cdnMeta = document.querySelector('meta[name="image-cdn"]');
   // Netlify features (image CDN, form handling) only exist on the Netlify site itself.
   var ON_NETLIFY = /^https?:$/.test(location.protocol) && /(\.netlify\.app|(^|\.)31bycartio\.com)$/.test(location.hostname);
+  // The site editor and its login only exist on the Netlify site.
+  if (!ON_NETLIFY) document.querySelectorAll('[data-netlify-only]').forEach(function (el) { el.hidden = true; });
   var USE_CDN = !PREVIEW && cdnMeta && cdnMeta.content === 'netlify' && ON_NETLIFY;
 
   function $(s, r) { return (r || document).querySelector(s); }
