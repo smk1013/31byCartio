@@ -107,6 +107,7 @@
     backseat: { file: 'backseat', w: 1672, h: 941, focus: [836, 470] },
     bonnet: { file: 'bonnet', w: 1448, h: 1086, focus: [780, 470] },
     headon: { file: 'headon', w: 1448, h: 1086, focus: [724, 470] },
+    engine: { file: 'engine', w: 1276, h: 960, focus: [600, 430] },
     steer: { file: 'corner', w: 1448, h: 1086, focus: [930, 640] },
     passenger: { file: 'passenger', w: 1536, h: 1024, focus: [1010, 640] },
     glass: { file: 'rear', w: 1672, h: 941, focus: [560, 420] },
@@ -116,17 +117,20 @@
     finale: { file: 'hero-on', w: 1672, h: 941, focus: [830, 470], mfit: .97 }
   };
   var OVERLAYS = {
+    headon: '<div class="hood" style="left:60px;top:240px;width:1330px;height:238px">' +
+      '<div class="hood-bay"><img src="assets/photos/engine.webp" alt="" decoding="async"></div>' +
+      '<div class="hood-flap"><i class="hood-top"></i><i class="hood-under"></i></div></div>',
     rear: '<div class="ov ov-plate" data-detail="plate" style="left:1233px;top:410px;width:154px;height:66px"><span>31 CARTIO</span><i>E31 SPECIALIST</i></div>',
     cluster: '<a class="ov ov-odo" data-bind="tel" href="tel:+18183955765" aria-label="Call us" style="left:982px;top:413px;width:66px;height:29px" id="odo-a"></a>' +
       '<a class="ov ov-odo" data-bind="tel" href="tel:+18183955765" aria-label="Call us" style="left:1059px;top:414px;width:61px;height:29px" id="odo-b"></a>',
     console: '<a class="ov ov-lcd" id="obc" href="https://www.instagram.com/31bycartio/" target="_blank" rel="noopener" aria-label="31 by Cartio on Instagram" style="left:189px;top:514px;width:442px;height:51px;transform:rotate(-1deg)"><span id="obc-text">31 BY CARTIO</span><i>ST</i></a>',
     backseat: '<div class="ov ov-mirror" style="left:726px;top:127px;width:226px;height:42px"><span>31 BY CARTIO</span></div>' +
-      '<div class="ov ov-emboss" style="left:196px;top:628px;width:270px;height:116px"><i class="e-sh"></i><i class="e-hi"></i><i class="e-base"></i></div>'
+      '<div class="ov ov-emboss" style="left:130px;top:752px;width:172px;height:74px"><i class="e-sh"></i><i class="e-hi"></i><i class="e-base"></i></div>'
   };
 
   /* ============================== TIMELINE ============================== */
   var REST = { rest: true };
-  function K(x, y, w, cap) { return { c: [x, y], w: w, cap: !!cap }; }
+  function K(x, y, w, cap) { return { c: [x, y], w: w, cap: cap || false }; }
   function R(o) { var r = { rest: true }; for (var k in o) r[k] = o[k]; return r; }
 
   var CAM = {
@@ -135,7 +139,7 @@
     rwP: K(835, 520, 725), winP: K(460, 245, 260), clP: K(547, 475, 934),
     odo: K(1051, 428, 560, 1), odoP: K(795, 386, 726),
     drvConsole: K(1300, 560, 900), radioP: K(1283, 488, 436), radio: K(435, 560, 700, 1),
-    bsRadioP: K(845, 495, 330), mirror: K(838, 150, 520, 1), leather: K(331, 686, 720, 1), leatherIn: K(331, 686, 420),
+    bsRadioP: K(845, 495, 330), mirror: K(838, 150, 520, 1), leather: K(233, 740, 600, 'r'), leatherIn: K(216, 789, 380),
     kb0: R({ k: 1.0 }), kb1: R({ k: .88 }), kbIn: R({ k: 1.1 }),
     stock: R({ k: 1.0 }), final0: R({ k: .94 }), final1: R({ k: 1.06 })
   };
@@ -186,8 +190,11 @@
     x({ s: 'backseat', c0: CAM.leather, c1: CAM.leatherIn, o: [.3, .8], blur: 1 }, { s: 'bonnet', c0: R({ k: .9, dx: -.05 }), c1: CAM.kb0, box: 'full', box1: 'split', o: [.06, .52], blur: 1 }, 60),
     move('bonnet', CAM.kb0, CAM.kb1, 85, { box: 'split', cap: 'paint', ch: 'paint' }),
     wipe('bonnet', 'headon', 45),
-    move('headon', CAM.kb0, CAM.kb1, 85, { box: 'split', cap: 'engines', ch: 'engines' }),
-    wipe('headon', 'steer', 45),
+    move('headon', CAM.kb0, CAM.kb1, 45, { box: 'split', cap: 'engines', ch: 'engines' }),
+    move('headon', CAM.kb1, K(724, 500, 1000), 50, { box: 'split', cap: 'engines', hood: 1 }),
+    x({ s: 'headon', c0: K(724, 500, 1000), c1: K(724, 370, 430), box: 'split', o: [.55, .92], blur: 1 }, { s: 'engine', c0: R({ k: 1 }), c1: R({ k: .95 }), box: 'split', o: [.42, .86], blur: 1 }, 55, { cap: 'engines' }),
+    move('engine', R({ k: .95 }), CAM.kb1, 55, { box: 'split', cap: 'engines' }),
+    wipe('engine', 'steer', 45),
     move('steer', CAM.kb0, CAM.kb1, 85, { box: 'split', cap: 'steering', ch: 'steering' }),
     wipe('steer', 'passenger', 45),
     move('passenger', CAM.kb0, CAM.kb1, 85, { box: 'split', cap: 'interior', ch: 'interior' }),
@@ -293,7 +300,8 @@
       var w2 = spec.w, h2 = w2 * asp;
       r = { x: spec.c[0] - w2 / 2, y: spec.c[1] - h2 / 2, w: w2, h: h2 };
     }
-    if (spec.cap && full) { if (layout === 'd') r.x -= r.w * .17; else r.y += r.h * .2; }
+    // Leave room for the caption: left captions push the subject right, 'r' captions push it left.
+    if (spec.cap && full) { if (layout === 'd') r.x += (spec.cap === 'r' ? 1 : -1) * r.w * .17; else r.y += r.h * .2; }
     return r;
   }
   function mixRect(A, B, t, asp) {
@@ -366,7 +374,7 @@
     }
 
     // captions
-    var side = 0, low = 0, dim = sg.dim ? sg.dim * sm(seg(t, 0, .15)) : 0;
+    var side = 0, sideR = 0, low = 0, dim = sg.dim ? sg.dim * sm(seg(t, 0, .15)) : 0;
     for (var n in caps) {
       var c2 = caps[n], f = Math.min(10, (c2.u1 - c2.u0) * .2), o;
       if (n === 'hero') o = 1 - seg(u, c2.u1 - f * 1.6, c2.u1);
@@ -375,12 +383,14 @@
       c2.el.style.opacity = o.toFixed(3); c2.el.style.setProperty('--o', o.toFixed(3));
       c2.el.classList.toggle('on', o > .01); c2.el.classList.toggle('live', o > .55);
       var cl = c2.el.classList;
-      if (cl.contains('cap-detail')) side = Math.max(side, o);
+      if (cl.contains('cap-detail')) { side = Math.max(side, o); if (cl.contains('cap-right')) sideR = Math.max(sideR, o); }
       else if (cl.contains('cap-line') || cl.contains('cap-hero')) low = Math.max(low, o * (layout === 'd' ? .8 : 1));
       else if (layout === 'm' && (cl.contains('cap-ch') || cl.contains('cap-story'))) low = Math.max(low, 0);
     }
     if (sg.t === 'x' && SEG[sg.i + 1] && SEG[sg.i + 1].dim) dim = SEG[sg.i + 1].dim * sm(seg(t, .5, 1));
     scrimL.style.opacity = (layout === 'd' ? side : 0).toFixed(3);
+    scrimL.classList.toggle('flip', sideR > 0 && sideR >= side - .001);
+    setHood(u);
     scrimB.style.opacity = (layout === 'd' ? low : Math.max(side, low)).toFixed(3);
     scrimF.style.opacity = dim.toFixed(3);
 
@@ -413,6 +423,17 @@
     found.classList.toggle('show', u > SEG[8].u0 && u < SEG[24].u0);
   }
   var lastU = -1;
+  // Hood: 0 = shut, 1 = fully open. Shut before its segment, open after it.
+  var HOOD = SEG.filter(function (s) { return s.hood; })[0], hoodEl = $('.hood'), hoodTop = $('.hood-top'), hoodUnder = $('.hood-under'), hoodO = -1;
+  function setHood(u) {
+    if (!HOOD || !hoodEl) return;
+    var o = u <= HOOD.u0 ? 0 : u >= HOOD.u1 ? 1 : sm(seg((u - HOOD.u0) / HOOD.d, .06, .88));
+    if (Math.abs(o - hoodO) < .0005) return; hoodO = o;
+    hoodEl.classList.toggle('on', o > 0);
+    hoodTop.style.transform = 'scaleY(' + (1 - sm(o / .42)).toFixed(4) + ')';
+    hoodUnder.style.transform = 'scaleY(' + sm((o - .36) / .64).toFixed(4) + ')';
+    hoodEl.style.setProperty('--h', o.toFixed(3));
+  }
   function chStart(id) { for (var i = 0; i < SEG.length; i++) if (SEG[i].ch === id) return SEG[i].u0; return 0; }
   function fire() { flash.classList.remove('go'); void flash.offsetWidth; flash.classList.add('go'); }
 
@@ -723,9 +744,14 @@
     story: function () {
       pTitle.textContent = 'Our story';
       pBody.innerHTML = '<div class="story"><h2>How it started</h2>' +
-        '<p>It started with one car: a black 1997 850Ci in South Florida, bought almost on impulse. Bringing it back turned into a deep dive, and the parts were hard to find. The answers were harder.</p>' +
-        '<p>Both led to the same place, the E31 forums and Facebook groups, and to the person at the front of nearly every thread: Alec Cartio. Alec has spent years with these cars, buying them, selling more than a hundred collector cars on Bring a Trailer and filming them through CARTIOLOGi Films. If the E31 has a Michelangelo, it\'s Alec.</p>' +
-        '<p>A search for parts became a phone call, and the phone call became a partnership. Today 31 by Cartio works from Southern California and South Florida, with a network of specialists who still know how to work on these cars.</p>' +
+        '<p class="story-lead">Some people see an 850 once and never stop thinking about it. Michael Keeby was one of them.</p>' +
+        '<ol class="tl">' +
+        '<li><span class="tl-when">Late 1990s</span><div><p>Michael, an insurance executive who would spend forty years in the business, falls for the BMW 850. A family comes first, and the car stays a someday.</p></div></li>' +
+        '<li><span class="tl-when">The end of COVID</span><div><p>The itch wins. Michael buys a black 1997 850Ci in South Florida. Bringing it back turns into a deep dive, and the parts are hard to find. The answers are harder.</p></div></li>' +
+        '<li><span class="tl-when">The parts</span><div><p>Both led to the same place, the E31 forums and Facebook groups, and to the person at the front of nearly every thread: Alec Cartio. Alec has spent years with these cars, buying them, selling more than a hundred collector cars on Bring a Trailer and filming them through CARTIOLOGi Films. If the E31 has a Michelangelo, it\'s Alec.</p><p>Michael bought parts from him. Then he bought a second 850Ci.</p></div></li>' +
+        '<li><span class="tl-when">The proposition</span><div><p>Two cars in the garage, and Michael and his son were having the time of their lives with them. So Michael called Alec with an idea.</p><blockquote class="story-quote">&ldquo;Let\'s start a company based on the E31s.&rdquo;</blockquote><p>A search for parts became a phone call, and the phone call became a partnership.</p></div></li>' +
+        '<li><span class="tl-when">Today</span><div><p>Alec\'s hard work and Michael\'s investment built 31 by Cartio. It works from Southern California and South Florida, with a network of specialists who still know how to work on these cars, and it is only getting started.</p></div></li>' +
+        '</ol>' +
         '<p class="story-name">The name? 31 is the chassis code. E31. It\'s the only car we work on.</p>' +
         '<dl class="specs"><div><dt>Built</dt><dd>1990 to 1999, Dingolfing, Germany</dd></div><div><dt>Designer</dt><dd>Klaus Kapitza</dd></div><div><dt>Body</dt><dd>Pillarless 2+2 coupe, pop-up headlights</dd></div><div><dt>Engines</dt><dd>4.0 and 4.4 V8, 5.0 and 5.4 V12, 5.6 S70 V12</dd></div><div><dt>850CSi built</dt><dd>1,510</dd></div></dl></div>';
     },
