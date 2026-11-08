@@ -373,14 +373,14 @@
       var A0 = resolve(sg.a, sg.from, FULL), P = resolve(sg.a, sg.portal, FULL), B0 = resolve(sg.b, sg.to, FULL);
       var ca = mixRect(A0, P, soft(t), H / W);
       var cb = mapTo(B0, scr(P, ca));
-      place(sg.a, ca, FULL, 1 - sm(seg(t, .78, 1)), 2, null, .7 * sm(seg(t, .45, .95)));
-      place(sg.b, cb, FULL, sm(seg(t, .3, .8)), 4, null, .7 * (1 - sm(seg(t, .3, .9))));
+      place(sg.a, ca, FULL, 1 - sm(seg(t, .62, 1)), 2, null, .7 * sm(seg(t, .4, .95)));
+      place(sg.b, cb, FULL, sm(seg(t, .22, .82)), 4, null, .7 * (1 - sm(seg(t, .3, .92))));
     } else if (sg.t === 'out') {
       var A1 = resolve(sg.a, sg.from, FULL), P2 = resolve(sg.b, sg.portal, FULL), B1 = resolve(sg.b, sg.to, FULL);
       var cb2 = mixRect(P2, B1, soft(t), H / W);
       var ca2 = mapTo(A1, scr(P2, cb2));
-      place(sg.b, cb2, FULL, sm(seg(t, 0, .25)), 2, null, .7 * (1 - sm(seg(t, .15, .8))));
-      place(sg.a, ca2, FULL, 1 - sm(seg(t, .12, .78)), 4, null, .7 * sm(seg(t, .05, .65)));
+      place(sg.b, cb2, FULL, sm(seg(t, 0, .3)), 2, null, .7 * (1 - sm(seg(t, .15, .85))));
+      place(sg.a, ca2, FULL, 1 - sm(seg(t, .1, .82)), 4, null, .7 * sm(seg(t, .05, .7)));
     } else if (sg.t === 'x') {
       [['A', 2], ['B', 4]].forEach(function (pair) {
         var L1 = sg[pair[0]], te = L1.lin ? t : soft(t);
@@ -403,9 +403,9 @@
     // captions
     var side = 0, sideR = 0, low = 0, dim = sg.dim ? sg.dim * sm(seg(t, 0, .15)) : 0;
     for (var n in caps) {
-      var c2 = caps[n], f = Math.min(10, (c2.u1 - c2.u0) * .2), o;
-      if (n === 'hero') o = 1 - seg(u, c2.u1 - f * 1.6, c2.u1);
-      else o = (u <= c2.u0 || u >= c2.u1) ? 0 : Math.min(seg(u, c2.u0, c2.u0 + f), 1 - seg(u, c2.u1 - f, c2.u1));
+      var c2 = caps[n], f = Math.min(18, (c2.u1 - c2.u0) * .22), o;
+      if (n === 'hero') o = 1 - sm(seg(u, c2.u1 - f * 1.6, c2.u1));
+      else o = (u <= c2.u0 || u >= c2.u1) ? 0 : Math.min(sm(seg(u, c2.u0, c2.u0 + f)), 1 - sm(seg(u, c2.u1 - f, c2.u1)));
       if (n === 'contact' && u >= c2.u0 + f) o = 1;
       c2.el.style.opacity = o.toFixed(3); c2.el.style.setProperty('--o', o.toFixed(3));
       c2.el.classList.toggle('on', o > .01); c2.el.classList.toggle('live', o > .55);
@@ -513,12 +513,14 @@
     target = clamp(-r.top / VH, 0, TOTAL);
     nav.classList.toggle('solid', r.bottom < window.innerHeight * .6);
   }
-  function loop() {
+  var lastT = 0;
+  function loop(now) {
     if (!running) return;
-    cur += (target - cur) * (REDUCE ? 1 : .072);
+    var dt = lastT ? Math.min(64, now - lastT) : 16.7; lastT = now;
+    cur += (target - cur) * (REDUCE ? 1 : 1 - Math.pow(1 - .068, dt / 16.7));
     if (Math.abs(target - cur) < .001) cur = target;
     render(cur);
-    if (cur === target) { running = false; return; }
+    if (cur === target) { running = false; lastT = 0; return; }
     requestAnimationFrame(loop);
   }
   function kick() { if (!running) { running = true; requestAnimationFrame(loop); } }
@@ -535,7 +537,7 @@
     var top = journey.getBoundingClientRect().top + window.scrollY + u * VH;
     var dip = $('#dip');
     dip.classList.add('on');
-    setTimeout(function () { window.scrollTo(0, top); readScroll(); cur = target; render(cur); dip.classList.remove('on'); }, REDUCE ? 0 : 200);
+    setTimeout(function () { window.scrollTo(0, top); readScroll(); cur = target; render(cur); requestAnimationFrame(function () { dip.classList.remove('on'); }); }, REDUCE ? 0 : 420);
   }
   document.addEventListener('click', function (e) {
     var g = e.target.closest('[data-go]');
@@ -602,15 +604,29 @@
   var panel = $('#panel'), pBody = $('#panel-body'), pTitle = $('#panel-title'), pBox = $('.panel-box'), lastFocus = null;
   function openPanel(view, arg) {
     lastFocus = document.activeElement;
+    clearTimeout(closeTimer); panel.classList.remove('closing');
     panel.hidden = false; panel.dataset.view = view;
     document.documentElement.classList.add('locked');
     VIEWS[view](arg);
     pBox.scrollTop = 0;
     var f = $('[autofocus]', pBody); (f || pBox).focus({ preventScroll: true });
   }
+  var revealIO = null;
+  function reveal() {
+    var items = $$('.rv', pBody);
+    if (REDUCE || !('IntersectionObserver' in window)) { items.forEach(function (el) { el.classList.add('in'); }); return; }
+    if (revealIO) revealIO.disconnect();
+    revealIO = new IntersectionObserver(function (es) { es.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add('in'); revealIO.unobserve(en.target); } }); }, { root: pBox, rootMargin: '0px 0px -6% 0px', threshold: .08 });
+    items.forEach(function (el) { el.classList.add('rv-on'); revealIO.observe(el); });
+  }
+  var closeTimer = null;
   function closePanel(silent) {
     if (panel.hidden) return;
-    panel.hidden = true; document.documentElement.classList.remove('locked');
+    // ease out, then hide (a jump closes at once so the dip can cover it)
+    clearTimeout(closeTimer);
+    if (silent || REDUCE) panel.hidden = true;
+    else { panel.classList.add('closing'); closeTimer = setTimeout(function () { panel.hidden = true; panel.classList.remove('closing'); }, 320); }
+    document.documentElement.classList.remove('locked');
     if (/^#car-/.test(location.hash)) { try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {} }
     if (!silent && lastFocus && lastFocus.focus) lastFocus.focus({ preventScroll: true });
   }
@@ -774,17 +790,49 @@
     },
     story: function () {
       pTitle.textContent = 'Our story';
-      pBody.innerHTML = '<div class="story"><h2>How it started</h2>' +
-        '<p class="story-lead">Some people see an 850 once and never stop thinking about it. Michael Keeby was one of them.</p>' +
-        '<ol class="tl">' +
-        '<li><span class="tl-when">Late 1990s</span><div><p>Michael, an insurance executive who would spend forty years in the business, falls for the BMW 850. A family comes first, and the car stays a someday.</p></div></li>' +
-        '<li><span class="tl-when">The end of COVID</span><div><p>The itch wins. Michael buys a black 1997 850Ci in South Florida. Bringing it back turns into a deep dive, and the parts are hard to find. The answers are harder.</p></div></li>' +
-        '<li><span class="tl-when">The parts</span><div><p>Both led to the same place, the E31 forums and Facebook groups, and to the person at the front of nearly every thread: Alec Cartio. Alec has spent years with these cars, buying them, selling more than a hundred collector cars on Bring a Trailer and filming them through CARTIOLOGi Films. If the E31 has a Michelangelo, it\'s Alec.</p><p>Michael bought parts from him. Then he bought a second 850Ci.</p></div></li>' +
-        '<li><span class="tl-when">The proposition</span><div><p>Two cars in the garage, and Michael and his son were having the time of their lives with them. So Michael called Alec with an idea.</p><blockquote class="story-quote">&ldquo;Let\'s start a company based on the E31s.&rdquo;</blockquote><p>A search for parts became a phone call, and the phone call became a partnership.</p></div></li>' +
-        '<li><span class="tl-when">Today</span><div><p>Alec\'s hard work and Michael\'s investment built 31 by Cartio. It works from Southern California and South Florida, with a network of specialists who still know how to work on these cars, and it is only getting started.</p></div></li>' +
-        '</ol>' +
-        '<p class="story-name">The name? 31 is the chassis code. E31. It\'s the only car we work on.</p>' +
-        '<dl class="specs"><div><dt>Built</dt><dd>1990 to 1999, Dingolfing, Germany</dd></div><div><dt>Designer</dt><dd>Klaus Kapitza</dd></div><div><dt>Body</dt><dd>Pillarless 2+2 coupe, pop-up headlights</dd></div><div><dt>Engines</dt><dd>4.0 and 4.4 V8, 5.0 and 5.4 V12, 5.6 S70 V12</dd></div><div><dt>850CSi built</dt><dd>1,510</dd></div></dl></div>';
+      var img = function (f, alt, cls) { return '<figure class="st-fig ' + (cls || '') + '"><img src="' + esc(imgUrl('/assets/photos/' + f + '.webp', 1600)) + '" data-raw="assets/photos/' + f + '.webp" alt="' + esc(alt) + '" loading="lazy" decoding="async"></figure>'; };
+      pBody.innerHTML = '<article class="st">' +
+        '<header class="st-open rv"><p class="st-eyebrow">31 by Cartio</p><h2>Two people.<br>One car.</h2>' +
+        '<p class="st-lead">31 by Cartio is a partnership between the man who knows the E31 better than almost anyone, and the man who waited more than twenty years to own one.</p></header>' +
+        img('hero-on', 'A black BMW 850 in the studio, headlights up', 'st-wide rv') +
+
+        '<section class="st-part"><p class="st-num rv">Part one</p><h3 class="rv">The partnership</h3>' +
+        '<div class="st-duo">' +
+        '<div class="st-person rv"><p class="st-role">The specialist</p><h4>Alec Cartio</h4>' +
+        '<p>Alec is the person at the front of nearly every E31 thread, in the forums and the Facebook groups. He has spent years with these cars, buying them, selling more than a hundred collector cars on Bring a Trailer and filming them through CARTIOLOGi Films. If the E31 has a Michelangelo, it\'s Alec.</p></div>' +
+        '<div class="st-person rv"><p class="st-role">The owner</p><h4>Michael Keeby</h4>' +
+        '<p>Michael spent forty years as an insurance executive and fell for the BMW 850 in the late 1990s. He brings an owner\'s eye, a long view, and the investment that turned a shared passion into a company.</p></div>' +
+        '</div>' +
+        '<p class="st-body rv">Alec\'s hard work and Michael\'s investment built 31 by Cartio. One knows how these cars should be put right. The other knows what it means to wait for one.</p>' +
+        '</section>' +
+
+        '<section class="st-part"><p class="st-num rv">Part two</p><h3 class="rv">How we got here</h3>' +
+        '<div class="st-flow">' +
+        '<p class="rv"><span class="st-when">Late 1990s.</span> Michael sees the 850 and doesn\'t forget it. A family comes first, and the car stays a someday, for more than twenty years.</p>' +
+        '<p class="rv"><span class="st-when">The end of COVID.</span> The itch finally wins. Michael buys a black 1997 850Ci in South Florida. Bringing it back turns into a deep dive, and the parts are hard to find. The answers are harder.</p>' +
+        '<p class="rv"><span class="st-when">The parts.</span> Both led to the same place, the E31 forums and Facebook groups, and to Alec. Michael bought parts from him. Then he bought a second 850Ci.</p>' +
+        '<p class="rv"><span class="st-when">The call.</span> Two cars in the garage, and Michael and his son were having the time of their lives with them. So Michael picked up the phone.</p>' +
+        '</div>' +
+        '<blockquote class="st-quote rv"><p>&ldquo;Let\'s start a company based on the E31s.&rdquo;</p><cite>Michael Keeby, to Alec Cartio</cite></blockquote>' +
+        '<p class="st-body rv">A search for parts became a phone call, and the phone call became a partnership. Today 31 by Cartio works from Southern California and South Florida, with a network of specialists who still know how to work on these cars.</p>' +
+        '</section>' +
+        img('cabin-wide', 'The cognac leather cabin of an 850', 'st-wide rv') +
+
+        '<section class="st-part"><p class="st-num rv">Part three</p><h3 class="rv">What comes next</h3>' +
+        '<p class="st-body rv">The newest E31 is past twenty-five years old. Every year there are fewer good ones, and fewer people who know how to keep them right. That is the work ahead of us.</p>' +
+        '<div class="st-ahead">' +
+        '<div class="rv"><h4>More cars, put right</h4><p>Restorations done the way BMW built them, from paint and engines to the leather, on both coasts.</p></div>' +
+        '<div class="rv"><h4>The best cars, found</h4><p>Finding, sorting and selling the E31s worth owning, and helping buyers know exactly what they\'re getting.</p></div>' +
+        '<div class="rv"><h4>Parts nobody else has</h4><p>Building the supply of hard-to-find parts that started this whole story.</p></div>' +
+        '<div class="rv"><h4>The next generation</h4><p>It began with a father and son having the time of their lives with two cars. We want more families to have that.</p></div>' +
+        '</div>' +
+        '<p class="st-close rv">The name? 31 is the chassis code. E31. It\'s the only car we work on, and we plan to keep it that way.</p>' +
+        '<div class="menu-cta rv"><button class="btn btn-gold" type="button" data-open="form">Tell us about your car</button><button class="btn btn-line" type="button" data-open="inventory">See the cars</button></div>' +
+        '</section>' +
+
+        '<dl class="specs st-specs rv"><div><dt>Built</dt><dd>1990 to 1999, Dingolfing, Germany</dd></div><div><dt>Designer</dt><dd>Klaus Kapitza</dd></div><div><dt>Body</dt><dd>Pillarless 2+2 coupe, pop-up headlights</dd></div><div><dt>Engines</dt><dd>4.0 and 4.4 V8, 5.0 and 5.4 V12, 5.6 S70 V12</dd></div><div><dt>850CSi built</dt><dd>1,510</dd></div></dl>' +
+        '</article>';
+      reveal();
     },
     details: function () {
       var n = DKEYS.filter(function (k) { return foundSet[k]; }).length;
