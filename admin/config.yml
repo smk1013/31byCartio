@@ -1,0 +1,89 @@
+# 31 by Cartio — site editor (Decap CMS)
+# The editor lives at https://31bycartio.com/admin/
+# Everything the team changes here is saved straight into the website's files,
+# and the live site updates itself about a minute later.
+
+backend:
+  name: github
+  repo: YOUR-GITHUB-NAME/31bycartio-site   # <- change this to your GitHub repository (step 3 in README)
+  branch: main
+  # Option B (invite staff by email, no GitHub accounts): see README, then use
+  #   name: git-gateway
+  # and delete the repo line above.
+
+site_url: https://31bycartio.com
+display_url: https://31bycartio.com
+logo_url: /assets/img/logo-badge-400.png
+media_folder: assets/uploads
+public_folder: /assets/uploads
+
+collections:
+  # ------------------------------------------------------------------ CARS
+  - name: inventory
+    label: Cars for sale
+    description: Add, edit or remove cars. The first photo is the cover. Drag cars or photos to reorder.
+    files:
+      - name: cars
+        label: Inventory
+        file: content/inventory.json
+        format: json
+        fields:
+          - name: cars
+            label: Cars
+            label_singular: car
+            widget: list
+            collapsed: true
+            summary: "{{fields.year}} {{fields.model}} - {{fields.paint}} - {{fields.status}}"
+            fields:
+              - { name: id, label: "Link name", widget: string, hint: "Lowercase letters, numbers and hyphens, e.g. 1995-850csi-jet-black. Must be different for every car. It becomes the car's web address.", pattern: ['^[a-z0-9-]+$', "Use lowercase letters, numbers and hyphens only"] }
+              - { name: status, label: Status, widget: select, default: available, options: [ { label: Available, value: available }, { label: Sale pending, value: pending }, { label: Coming soon, value: coming }, { label: In restoration, value: restoration }, { label: Sold, value: sold } ] }
+              - { name: featured, label: "Show first", widget: boolean, default: false, required: false, hint: "Puts this car at the top of the list." }
+              - { name: year, label: Year, widget: number, value_type: int, min: 1989, max: 1999 }
+              - { name: model, label: Model, widget: select, options: ["840Ci", "850i", "850Ci", "850CSi", "Alpina B12", "Other"] }
+              - { name: headline, label: "One-line summary", widget: string, required: false, hint: "e.g. S70 V12, six-speed manual" }
+              - { name: paint, label: "Paint color name", widget: string, hint: "e.g. Jet Black, Calypso Red" }
+              - { name: paint_hex, label: "Paint swatch", widget: color, required: false, hint: "Pick a color close to the paint. Used for the little swatch and, until photos are added, the illustration." }
+              - { name: interior, label: Interior, widget: string, required: false }
+              - { name: transmission, label: Gearbox, widget: select, options: ["Automatic", "6-speed manual"], required: false }
+              - { name: mileage, label: Miles, widget: number, value_type: int, required: false }
+              - { name: price, label: "Price in dollars", widget: number, value_type: int, required: false, hint: "Leave empty to show 'Inquire'." }
+              - { name: location, label: Location, widget: select, options: ["Southern California", "South Florida"], required: false }
+              - name: photos
+                label: Photos
+                label_singular: photo
+                widget: list
+                required: false
+                hint: "Landscape photos work best. The first photo is the cover."
+                summary: "{{fields.caption}}"
+                fields:
+                  - { name: image, label: Photo, widget: image, choose_url: false }
+                  - { name: caption, label: Caption, widget: string, required: false }
+              - { name: highlights, label: Highlights, widget: list, required: false, field: { name: item, label: Highlight, widget: string } }
+              - { name: description, label: Description, widget: text, required: false }
+              - { name: sample, label: "Sample listing", widget: boolean, default: false, required: false, hint: "Only for the placeholder cars. Delete the samples before launch." }
+
+  # ------------------------------------------------------------- SETTINGS
+  - name: settings
+    label: Contact and social
+    files:
+      - name: settings
+        label: Contact and social links
+        file: content/settings.json
+        format: json
+        fields:
+          - { name: business_name, label: Business name, widget: string }
+          - { name: phone_display, label: "Phone (as shown)", widget: string, hint: "e.g. 818-395-5765" }
+          - { name: phone, label: "Phone for calls", widget: string, hint: "International format, e.g. +18183955765" }
+          - { name: text_phone, label: "Phone for texts", widget: string, hint: "International format, e.g. +18183955765" }
+          - { name: email, label: Email, widget: string }
+          - { name: instagram, label: "Instagram username", widget: string, hint: "Without the @, e.g. 31bycartio" }
+          - { name: facebook, label: "Facebook page username", widget: string, required: false, hint: "The part after facebook.com/. Leave empty to hide the Facebook links." }
+          - { name: youtube, label: "YouTube handle", widget: string, hint: "Without the @" }
+          - name: locations
+            label: Locations
+            widget: list
+            fields:
+              - { name: name, label: Name, widget: string }
+              - { name: note, label: Note, widget: string, required: false }
+          - { name: logo, label: "Replace logo (optional)", widget: image, required: false, choose_url: false, hint: "Leave empty to use the built-in logo." }
+          - { name: announcement, label: Announcement, widget: hidden, required: false }

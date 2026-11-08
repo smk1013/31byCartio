@@ -1,0 +1,22 @@
+{
+  "business_name": "31 by Cartio",
+  "phone_display": "818-395-5765",
+  "phone": "+18183955765",
+  "text_phone": "+18183955765",
+  "email": "alec@31bycartio.com",
+  "instagram": "31bycartio",
+  "facebook": "31bycartio",
+  "youtube": "31bycartio",
+  "locations": [
+    {
+      "name": "Southern California",
+      "note": "Los Angeles area"
+    },
+    {
+      "name": "South Florida",
+      "note": "By appointment"
+    }
+  ],
+  "logo": "",
+  "announcement": ""
+}

@@ -1,0 +1,64 @@
+{
+  "cars": [
+    {
+      "id": "sample-850csi-jet-black",
+      "sample": true,
+      "status": "available",
+      "featured": true,
+      "model": "850CSi",
+      "paint": "Jet Black",
+      "interior": "Cognac leather",
+      "transmission": "6-speed manual",
+      "location": "Southern California",
+      "headline": "Sample listing: your cars appear here",
+      "highlights": ["Up to 30 photos per car, first photo is the cover", "Leave the price empty to show Inquire"],
+      "description": "This sample shows how a car page looks. Open the editor at /admin, choose Cars for sale, and replace it with one of your cars and its real photos.",
+      "photos": [
+        { "image": "/assets/photos/hero-on.webp", "caption": "" },
+        { "image": "/assets/photos/rear.webp", "caption": "" },
+        { "image": "/assets/photos/cabin-wide.webp", "caption": "" },
+        { "image": "/assets/photos/cluster.webp", "caption": "" }
+      ]
+    },
+    {
+      "id": "sample-850ci-black",
+      "sample": true,
+      "status": "available",
+      "model": "850Ci",
+      "paint": "Black",
+      "interior": "Cognac leather",
+      "transmission": "6-speed manual",
+      "location": "South Florida",
+      "headline": "Sample listing",
+      "photos": [
+        { "image": "/assets/photos/rear.webp", "caption": "" },
+        { "image": "/assets/photos/rearwheel.webp", "caption": "" }
+      ]
+    },
+    {
+      "id": "sample-840ci-black",
+      "sample": true,
+      "status": "coming",
+      "model": "840Ci",
+      "paint": "Black",
+      "location": "Southern California",
+      "headline": "Sample listing",
+      "photos": [
+        { "image": "/assets/photos/corner.webp", "caption": "" },
+        { "image": "/assets/photos/passenger.webp", "caption": "" }
+      ]
+    },
+    {
+      "id": "sample-850i-in-the-shop",
+      "sample": true,
+      "status": "restoration",
+      "model": "850i",
+      "paint": "Black",
+      "location": "South Florida",
+      "headline": "Sample listing: in the shop now",
+      "photos": [
+        { "image": "/assets/photos/bonnet.webp", "caption": "" }
+      ]
+    }
+  ]
+}
