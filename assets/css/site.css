@@ -559,3 +559,23 @@ html { scroll-behavior: auto; }
 .st-thread > div::before { content: ""; position: absolute; left: -30px; top: 5px; width: 9px; height: 9px; border-radius: 50%; background: #0f0e0c; box-shadow: 0 0 0 1.5px var(--gold); }
 .st-mark { font: 700 11.5px/1 var(--sans); letter-spacing: .18em; text-transform: uppercase; color: var(--gold); margin-bottom: 10px; }
 .st-quote p { max-width: 20em; }
+
+/* story: larger type, production table */
+.st-eyebrow, .st-mark, .st-quote cite { font-size: 13.5px; }
+.st-lead { font-size: clamp(23px, 2.3vw, 29px); }
+.st-prose p, .st-thread p:not(.st-mark), .st-body, .st-flow p { font-size: clamp(19px, 1.6vw, 21.5px); line-height: 1.7; }
+.st-ahead h4 { font-size: clamp(25px, 2.2vw, 29px); }
+.st-ahead p { font-size: clamp(18px, 1.5vw, 20px); line-height: 1.65; color: #cfc6b8; }
+.st-facts { margin-top: 56px; max-width: 640px; }
+.st-facts h4 { font: 400 clamp(26px, 2.4vw, 32px)/1.2 var(--serif); color: var(--gold-hi); margin: 0 0 14px; }
+.st-facts h4 + dl { margin-bottom: 44px; }
+.st-specs { margin-top: 0; max-width: none; }
+.st-specs div { grid-template-columns: 130px 1fr; font-size: 17.5px; padding: 15px 0; }
+.st-prod dd { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; }
+.st-prod dd span { color: var(--bone-2); }
+.st-prod small { display: block; margin-top: 4px; font-size: 14.5px; color: rgba(237,230,218,.5); }
+.st-prod b { font: 400 26px/1 var(--serif); color: var(--bone); font-variant-numeric: tabular-nums; }
+.st-prod dt { color: var(--bone); font-weight: 700; }
+.st-prod .st-total b { color: var(--gold-hi); }
+.st-prod .st-total dt { color: var(--gold); }
+@media (max-width: 700px) { .st-specs div { grid-template-columns: 90px 1fr; font-size: 16px; } .st-prod b { font-size: 22px; } }

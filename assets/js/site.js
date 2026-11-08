@@ -810,7 +810,7 @@
         '<div class="rv"><p class="st-mark">Two in the garage</p><p>A second 850Ci follows. Michael and his son take both cars to shows and work on them side by side, and the friendship with Alec grows into something more.</p></div>' +
         '<div class="rv"><p class="st-mark">The call</p><p>One day, Michael picks up the phone.</p></div>' +
         '</div>' +
-        '<blockquote class="st-quote rv"><p>&ldquo;How would you feel about starting a company for the exquisite machines known as the E31s?&rdquo;</p><cite>Michael Keeby, to Alec Cartio</cite></blockquote>' +
+        '<blockquote class="st-quote rv"><p>&ldquo;How would you feel about starting a company for the exquisite machines we both own and love?&rdquo;</p><cite>Michael Keeby, to Alec Cartio</cite></blockquote>' +
         '<p class="st-body rv">A search for parts became a friendship, and the friendship became a partnership. Today 31 by Cartio works from Southern California and South Florida, with a network of specialists who still know how to work on these cars.</p>' +
         '</section>' +
         img('cabin-wide', 'The cognac leather cabin of an 850', 'st-wide rv') +
@@ -823,11 +823,18 @@
         '<div class="rv"><h4>Parts, finished properly</h4><p>Supplying parts, and working with our partners on custom-made ones, so that no part of your restoration or your new purchase feels unfinished.</p></div>' +
         '<div class="rv"><h4>The next generation</h4><p>For everyone who is part of this company: Alec, the Keeby family, the friends who have supported us along the way, and every customer, today and tomorrow, who travels the road ahead with us.</p></div>' +
         '</div>' +
-        '<p class="st-close rv">31 is the chassis code. At 31 by Cartio, we pride ourselves on setting the flagship standard for these cars, through restoration and innovation.</p>' +
         '<div class="menu-cta rv"><button class="btn btn-gold" type="button" data-open="form">Tell us about your car</button><button class="btn btn-line" type="button" data-open="inventory">See the cars</button></div>' +
         '</section>' +
 
-        '<dl class="specs st-specs rv"><div><dt>Built</dt><dd>1990 to 1999, Dingolfing, Germany</dd></div><div><dt>Designer</dt><dd>Klaus Kapitza</dd></div><div><dt>Body</dt><dd>Pillarless 2+2 coupe, pop-up headlights</dd></div><div><dt>Engines</dt><dd>4.0 and 4.4 V8, 5.0 and 5.4 V12, 5.6 S70 V12</dd></div><div><dt>850CSi built</dt><dd>1,510</dd></div></dl>' +
+        '<div class="st-facts rv"><h4>The E31</h4><dl class="specs st-specs"><div><dt>Built</dt><dd>1990 to 1999, Dingolfing, Germany</dd></div><div><dt>Designer</dt><dd>Klaus Kapitza</dd></div><div><dt>Body</dt><dd>Pillarless 2+2 coupe, pop-up headlights</dd></div><div><dt>Engines</dt><dd>4.0 and 4.4 V8, 5.0 and 5.4 V12, 5.6 S70 V12</dd></div></dl>' +
+        '<h4>How many were built</h4><dl class="specs st-specs st-prod">' +
+        '<div><dt>850i</dt><dd><span>5.0 V12, 1990 to 1994<small>Includes the first 850Ci, as the car was renamed in 1992</small></span><b>20,072</b></dd></div>' +
+        '<div><dt>850Ci</dt><dd><span>5.4 V12, 1994 to 1999</span><b>1,218</b></dd></div>' +
+        '<div><dt>850CSi</dt><dd><span>5.6 S70 V12, 1992 to 1996</span><b>1,510</b></dd></div>' +
+        '<div><dt>840Ci</dt><dd><span>4.0 V8, 1993 to 1996</span><b>4,728</b></dd></div>' +
+        '<div><dt>840Ci</dt><dd><span>4.4 V8, 1996 to 1999</span><b>3,075</b></dd></div>' +
+        '<div class="st-total"><dt>All E31s</dt><dd><span>About</span><b>30,600</b></dd></div>' +
+        '</dl></div>' +
         '</article>';
       reveal();
     },
