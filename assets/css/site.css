@@ -546,3 +546,16 @@ a.ov { text-decoration: none; cursor: pointer; }
 .btn, .nav-btn, .tile, .lc, .card, .res, .svc a { transition-duration: .35s; transition-timing-function: cubic-bezier(.2,.7,.2,1); }
 html { scroll-behavior: auto; }
 @media (prefers-reduced-motion: reduce) { .rv-on { opacity: 1 !important; transform: none !important; } .panel-box, .panel-back { animation: none; } }
+
+/* story, revised: one flowing piece, no part labels */
+.st-open h2 { font-size: clamp(42px, 5.4vw, 72px); line-height: 1.02; max-width: 12em; }
+.st-part h3 { margin-top: 0; }
+.st-prose { display: grid; gap: 22px; max-width: 34em; }
+.st-prose p, .st-thread p:not(.st-mark) { font: 400 clamp(17px, 1.4vw, 19px)/1.7 var(--serif); color: #d8d0c3; }
+.st-prose p:first-child::first-letter { float: left; font: 400 4.1em/.8 var(--serif); color: var(--gold-hi); margin: .08em .1em 0 0; }
+.st-thread { position: relative; display: grid; gap: 30px; max-width: 34em; padding-left: 30px; }
+.st-thread::before { content: ""; position: absolute; left: 4px; top: 8px; bottom: 8px; width: 1px; background: linear-gradient(rgba(211,180,138,.6), rgba(211,180,138,.08)); }
+.st-thread > div { position: relative; }
+.st-thread > div::before { content: ""; position: absolute; left: -30px; top: 5px; width: 9px; height: 9px; border-radius: 50%; background: #0f0e0c; box-shadow: 0 0 0 1.5px var(--gold); }
+.st-mark { font: 700 11.5px/1 var(--sans); letter-spacing: .18em; text-transform: uppercase; color: var(--gold); margin-bottom: 10px; }
+.st-quote p { max-width: 20em; }

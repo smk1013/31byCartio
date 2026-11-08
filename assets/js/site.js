@@ -792,41 +792,38 @@
       pTitle.textContent = 'Our story';
       var img = function (f, alt, cls) { return '<figure class="st-fig ' + (cls || '') + '"><img src="' + esc(imgUrl('/assets/photos/' + f + '.webp', 1600)) + '" data-raw="assets/photos/' + f + '.webp" alt="' + esc(alt) + '" loading="lazy" decoding="async"></figure>'; };
       pBody.innerHTML = '<article class="st">' +
-        '<header class="st-open rv"><p class="st-eyebrow">31 by Cartio</p><h2>Two people.<br>One car.</h2>' +
+        '<header class="st-open rv"><p class="st-eyebrow">31 by Cartio</p><h2>Two life paths, crossing in pursuit of one perfect car.</h2>' +
         '<p class="st-lead">31 by Cartio is a partnership between the man who knows the E31 better than almost anyone, and the man who waited more than twenty years to own one.</p></header>' +
         img('hero-on', 'A black BMW 850 in the studio, headlights up', 'st-wide rv') +
 
-        '<section class="st-part"><p class="st-num rv">Part one</p><h3 class="rv">The partnership</h3>' +
-        '<div class="st-duo">' +
-        '<div class="st-person rv"><p class="st-role">The specialist</p><h4>Alec Cartio</h4>' +
-        '<p>Alec is the person at the front of nearly every E31 thread, in the forums and the Facebook groups. He has spent years with these cars, buying them, selling more than a hundred collector cars on Bring a Trailer and filming them through CARTIOLOGi Films. If the E31 has a Michelangelo, it\'s Alec.</p></div>' +
-        '<div class="st-person rv"><p class="st-role">The owner</p><h4>Michael Keeby</h4>' +
-        '<p>Michael spent forty years as an insurance executive and fell for the BMW 850 in the late 1990s. He brings an owner\'s eye, a long view, and the investment that turned a shared passion into a company.</p></div>' +
-        '</div>' +
-        '<p class="st-body rv">Alec\'s hard work and Michael\'s investment built 31 by Cartio. One knows how these cars should be put right. The other knows what it means to wait for one.</p>' +
-        '</section>' +
+        '<section class="st-part"><h3 class="rv">The partnership</h3>' +
+        '<div class="st-prose">' +
+        '<p class="rv">Alec Cartio is the person at the front of nearly every E31 thread, in the forums and the Facebook groups. He has spent years with these cars, buying them, selling more than a hundred collector cars on Bring a Trailer and filming them through CARTIOLOGi Films. If the E31 has a Michelangelo, it\'s Alec.</p>' +
+        '<p class="rv">Michael Keeby spent forty years as an insurance executive and a lifetime working on cars, a true passion of his. Since the late 1990s, the BMW 850 had been the one car he always meant to own.</p>' +
+        '<p class="rv">Together they bring the knowledge, the craft and the commitment that turn a shared passion into a company. 31 by Cartio is built on the hard work of both, with the backing of family and friends, among them Michael\'s brother, Jim Keeby, and many others who have helped along the way.</p>' +
+        '</div></section>' +
 
-        '<section class="st-part"><p class="st-num rv">Part two</p><h3 class="rv">How we got here</h3>' +
-        '<div class="st-flow">' +
-        '<p class="rv"><span class="st-when">Late 1990s.</span> Michael sees the 850 and doesn\'t forget it. A family comes first, and the car stays a someday, for more than twenty years.</p>' +
-        '<p class="rv"><span class="st-when">The end of COVID.</span> The itch finally wins. Michael buys a black 1997 850Ci in South Florida. Bringing it back turns into a deep dive, and the parts are hard to find. The answers are harder.</p>' +
-        '<p class="rv"><span class="st-when">The parts.</span> Both led to the same place, the E31 forums and Facebook groups, and to Alec. Michael bought parts from him. Then he bought a second 850Ci.</p>' +
-        '<p class="rv"><span class="st-when">The call.</span> Two cars in the garage, and Michael and his son were having the time of their lives with them. So Michael picked up the phone.</p>' +
+        '<section class="st-part"><h3 class="rv">How we got here</h3>' +
+        '<div class="st-thread">' +
+        '<div class="rv"><p class="st-mark">The first 850Ci</p><p>After years of admiring the car, Michael purchases a black 1997 850Ci in South Florida. Bringing it back to the standard it deserves becomes a deep dive. The parts are hard to find, and the answers are harder.</p></div>' +
+        '<div class="rv"><p class="st-mark">Help and guidance</p><p>The search leads to the E31 forums and Facebook groups, and to Alec. It begins with parts and soon becomes more: Michael asks Alec for help and guidance, and two people who have worked on cars all their lives find common ground. That is where the friendship begins.</p></div>' +
+        '<div class="rv"><p class="st-mark">Two in the garage</p><p>A second 850Ci follows. Michael and his son take both cars to shows and work on them side by side, and the friendship with Alec grows into something more.</p></div>' +
+        '<div class="rv"><p class="st-mark">The call</p><p>One day, Michael picks up the phone.</p></div>' +
         '</div>' +
-        '<blockquote class="st-quote rv"><p>&ldquo;Let\'s start a company based on the E31s.&rdquo;</p><cite>Michael Keeby, to Alec Cartio</cite></blockquote>' +
-        '<p class="st-body rv">A search for parts became a phone call, and the phone call became a partnership. Today 31 by Cartio works from Southern California and South Florida, with a network of specialists who still know how to work on these cars.</p>' +
+        '<blockquote class="st-quote rv"><p>&ldquo;How would you feel about starting a company for the exquisite machines known as the E31s?&rdquo;</p><cite>Michael Keeby, to Alec Cartio</cite></blockquote>' +
+        '<p class="st-body rv">A search for parts became a friendship, and the friendship became a partnership. Today 31 by Cartio works from Southern California and South Florida, with a network of specialists who still know how to work on these cars.</p>' +
         '</section>' +
         img('cabin-wide', 'The cognac leather cabin of an 850', 'st-wide rv') +
 
-        '<section class="st-part"><p class="st-num rv">Part three</p><h3 class="rv">What comes next</h3>' +
-        '<p class="st-body rv">The newest E31 is past twenty-five years old. Every year there are fewer good ones, and fewer people who know how to keep them right. That is the work ahead of us.</p>' +
+        '<section class="st-part"><h3 class="rv">The road ahead</h3>' +
+        '<p class="st-body rv">There is a particular class to a car that has stood the test of time, and the E31 carries it better than most. Every year there are fewer good examples, and fewer experts to keep them running straight on the road ahead. That is the work in front of us, and it is the mission this company is built around.</p>' +
         '<div class="st-ahead">' +
-        '<div class="rv"><h4>More cars, put right</h4><p>Restorations done the way BMW built them, from paint and engines to the leather, on both coasts.</p></div>' +
-        '<div class="rv"><h4>The best cars, found</h4><p>Finding, sorting and selling the E31s worth owning, and helping buyers know exactly what they\'re getting.</p></div>' +
-        '<div class="rv"><h4>Parts nobody else has</h4><p>Building the supply of hard-to-find parts that started this whole story.</p></div>' +
-        '<div class="rv"><h4>The next generation</h4><p>It began with a father and son having the time of their lives with two cars. We want more families to have that.</p></div>' +
+        '<div class="rv"><h4>More cars, put right</h4><p>Restoration to the standard BMW envisioned for these cars as they left the factory line.</p></div>' +
+        '<div class="rv"><h4>The best E31s, from around the world</h4><p>Sourcing the finest examples and offering them through a company that is accessible, reputable and genuinely invested in bringing the public\'s love back to these machines.</p></div>' +
+        '<div class="rv"><h4>Parts, finished properly</h4><p>Supplying parts, and working with our partners on custom-made ones, so that no part of your restoration or your new purchase feels unfinished.</p></div>' +
+        '<div class="rv"><h4>The next generation</h4><p>For everyone who is part of this company: Alec, the Keeby family, the friends who have supported us along the way, and every customer, today and tomorrow, who travels the road ahead with us.</p></div>' +
         '</div>' +
-        '<p class="st-close rv">The name? 31 is the chassis code. E31. It\'s the only car we work on, and we plan to keep it that way.</p>' +
+        '<p class="st-close rv">31 is the chassis code. At 31 by Cartio, we pride ourselves on setting the flagship standard for these cars, through restoration and innovation.</p>' +
         '<div class="menu-cta rv"><button class="btn btn-gold" type="button" data-open="form">Tell us about your car</button><button class="btn btn-line" type="button" data-open="inventory">See the cars</button></div>' +
         '</section>' +
 
