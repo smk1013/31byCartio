@@ -19,6 +19,8 @@
   function lerp(a, b, t) { return a + (b - a) * t; }
   function seg(p, a, b) { return clamp((p - a) / (b - a), 0, 1); }
   function ease(t) { return t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; }
+  // Soft ease: half linear, half ease-in-out. Shots never fully stop at a seam, so the camera keeps flowing.
+  function soft(t) { return .45 * t + .55 * ease(t); }
   function sm(t) { t = clamp(t, 0, 1); return t * t * (3 - 2 * t); }
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function slug(s) { return String(s || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); }
@@ -143,11 +145,16 @@
   function xin(a, from, portal, b, to, d, o) { return ext({ t: 'in', a: a, from: from, portal: portal, b: b, to: to, d: d }, o); }
   function xout(a, from, b, portal, to, d, o) { return ext({ t: 'out', a: a, from: from, portal: portal, b: b, to: to, d: d }, o); }
   function x(A, B, d, o) { return ext({ t: 'x', A: A, B: B, d: d }, o); }
+  // Camera tracks sideways past the car: the outgoing still keeps sliding and the next one arrives
+  // already moving the same way, with a soft motion blur where they cross.
+  // Every sideways move is paired with a slight push-in so there is always picture beyond the frame edge.
+  var DRIFT = R({ k: .95, dx: .025 });
   function track(a, b, d, o) {
-    return x({ s: a, c0: REST, c1: R({ dx: .42 }), o: [.3, .72] }, { s: b, c0: R({ dx: -.42 }), c1: REST, o: [.22, .62] }, d, o);
+    return x({ s: a, c0: DRIFT, c1: R({ k: .8, dx: .12 }), o: [.42, .92], blur: 1, lin: 1 }, { s: b, c0: R({ k: .8, dx: -.12 }), c1: REST, o: [.08, .58], blur: 1, lin: 1 }, d, o);
   }
+  // Chapter to chapter: the slow zoom keeps going while the frame glides on to the next car.
   function wipe(a, b, d, o) {
-    return x({ s: a, c0: CAM.kb1, c1: R({ k: .84 }), box: 'split', o: [.85, 1] }, { s: b, c0: CAM.kbIn, c1: CAM.kb0, box: 'split', wipe: [0, .85] }, d, o);
+    return x({ s: a, c0: CAM.kb1, c1: R({ k: .78, dx: .1 }), box: 'split', o: [.4, .92], blur: 1 }, { s: b, c0: R({ k: .85, dx: -.08 }), c1: CAM.kb0, box: 'split', o: [.08, .6], blur: 1 }, d, o);
   }
   function ext(a, b) { for (var k in b) a[k] = b[k]; return a; }
 
@@ -156,15 +163,15 @@
     x({ s: 'heroOff', c0: CAM.hero, c1: CAM.hero, o: [.62, .8] }, { s: 'heroOn', c0: CAM.hero, c1: CAM.hero, o: [.32, .58] }, 45, { flash: .4 }),
     move('heroOn', CAM.hero, CAM.podNear, 40),
     xin('heroOn', CAM.podNear, CAM.podP, 'lamp', REST, 55),
-    hold('lamp', REST, 45, { cap: 'lamp' }),
+    move('lamp', REST, DRIFT, 45, { cap: 'lamp', lin: 1 }),
     track('lamp', 'corner', 60),
-    hold('corner', REST, 45, { cap: 'corner' }),
+    move('corner', REST, DRIFT, 45, { cap: 'corner', lin: 1 }),
     track('corner', 'rearwheel', 60),
     xout('rearwheel', REST, 'rear', CAM.rwP, REST, 65),
-    hold('rear', REST, 55, { cap: 'step', ch: 'inside', detail: 'plate' }),
-    xin('rear', REST, CAM.winP, 'cabin', REST, 65),
-    hold('cabin', REST, 40, { cap: 'look' }),
-    xin('cabin', REST, CAM.clP, 'cluster', REST, 55),
+    move('rear', REST, R({ k: .95 }), 55, { cap: 'step', ch: 'inside', detail: 'plate', lin: 1 }),
+    xin('rear', R({ k: .95 }), CAM.winP, 'cabin', REST, 65),
+    move('cabin', REST, R({ k: .95 }), 40, { cap: 'look', lin: 1 }),
+    xin('cabin', R({ k: .95 }), CAM.clP, 'cluster', REST, 55),
     move('cluster', REST, CAM.odo, 35, { cap: 'odo' }),
     hold('cluster', CAM.odo, 55, { cap: 'odo', ch: 'gauges', detail: 'odo' }),
     xout('cluster', CAM.odo, 'driver', CAM.odoP, REST, 65),
@@ -176,7 +183,7 @@
     hold('backseat', CAM.mirror, 40, { cap: 'mirror', detail: 'mirror' }),
     move('backseat', CAM.mirror, CAM.leather, 40, { cap: 'leather' }),
     hold('backseat', CAM.leather, 50, { cap: 'leather', ch: 'leather', detail: 'leather' }),
-    x({ s: 'backseat', c0: CAM.leather, c1: CAM.leatherIn, o: [.3, .8] }, { s: 'bonnet', c0: CAM.kbIn, c1: CAM.kb0, box: 'split', wipe: [.08, .8] }, 55),
+    x({ s: 'backseat', c0: CAM.leather, c1: CAM.leatherIn, o: [.3, .8], blur: 1 }, { s: 'bonnet', c0: R({ k: .9, dx: -.05 }), c1: CAM.kb0, box: 'full', box1: 'split', o: [.06, .52], blur: 1 }, 60),
     move('bonnet', CAM.kb0, CAM.kb1, 85, { box: 'split', cap: 'paint', ch: 'paint' }),
     wipe('bonnet', 'headon', 45),
     move('headon', CAM.kb0, CAM.kb1, 85, { box: 'split', cap: 'engines', ch: 'engines' }),
@@ -190,7 +197,7 @@
     move('dash', CAM.kb0, CAM.kb1, 85, { box: 'split', cap: 'wiring', ch: 'wiring' }),
     x({ s: 'dash', c0: CAM.kb1, c1: CAM.kb1, box: 'split', box1: 'full', o: [.55, .95] }, { s: 'stock', c0: R({ k: 1.12 }), c1: CAM.stock, o: [.45, .9] }, 60),
     hold('stock', CAM.stock, 150, { cap: 'stock', ch: 'stock', lineup: true, dim: .6 }),
-    x({ s: 'stock', c0: CAM.stock, c1: R({ k: .9 }), o: [0, .45] }, { s: 'story', c0: CAM.kbIn, c1: CAM.kb0, box: 'story', wipe: [.2, .9] }, 55),
+    x({ s: 'stock', c0: CAM.stock, c1: R({ k: .9 }), o: [.25, .8], blur: 1 }, { s: 'story', c0: R({ k: .9, dx: .05 }), c1: CAM.kb0, box: 'full', box1: 'story', o: [.05, .5], blur: 1 }, 60),
     move('story', CAM.kb0, CAM.kb1, 75, { box: 'story', cap: 'story', ch: 'story' }),
     x({ s: 'story', c0: CAM.kb1, c1: CAM.final0, box: 'story', box1: 'full', o: [.6, .9] }, { s: 'finale', c0: CAM.final0, c1: CAM.final0, o: [.5, .8] }, 60, { flash: .55 }),
     move('finale', CAM.final0, CAM.final1, 80, { cap: 'contact', ch: 'contact', end: true, dim: .45 })
@@ -298,7 +305,7 @@
   function scr(rect, cam) { var s = W / cam.w; return { x: (rect.x - cam.x) * s, y: (rect.y - cam.y) * s, w: rect.w * s, h: rect.h * s }; }
   function mapTo(rect, target) { var s = target.w / rect.w; var w = W / s; return { x: rect.x - target.x / s, y: rect.y - target.y / s, w: w, h: w * H / W }; }
 
-  function place(name, cam, bx, op, z, wipeT) {
+  function place(name, cam, bx, op, z, wipeT, blur) {
     var Ly = layers[name], s = bx[2] / cam.w;
     var tf = 'translate3d(' + (bx[0] - cam.x * s).toFixed(2) + 'px,' + (bx[1] - cam.y * s).toFixed(2) + 'px,0) scale(' + s.toFixed(5) + ')';
     Ly.ph.style.transform = tf; Ly.ov.style.transform = tf;
@@ -307,6 +314,8 @@
     var clip = (isFull(bx) && wipeT == null) ? 'none' : 'inset(' + top.toFixed(1) + 'px ' + (W - bx[0] - bx[2]).toFixed(1) + 'px ' + (H - bx[1] - bx[3]).toFixed(1) + 'px ' + bx[0].toFixed(1) + 'px round 3px)';
     Ly.fr.style.clipPath = clip; Ly.fr.style.webkitClipPath = clip;
     Ly.fr.style.opacity = op.toFixed(3);
+    var bl = blur > .02 ? (blur * BLUR).toFixed(2) : 0;
+    if (bl !== Ly.bl) { Ly.fr.style.filter = bl ? 'blur(' + bl + 'px)' : ''; Ly.bl = bl; }
     Ly.fr.style.zIndex = z;
     // On phones a full-screen still is shorter than the screen: fade its top and bottom into the studio.
     var fe = layout === 'm' ? clamp((bx[3] - H * .42) / (H * .58), 0, 1) : 0;
@@ -314,6 +323,7 @@
     Ly.ov.style.pointerEvents = op > .9 ? 'auto' : 'none';
     Ly.used = true;
   }
+  var BLUR = 0;
   function findSeg(u) { for (var i = 0; i < SEG.length; i++) if (u < SEG[i].u1) return SEG[i]; return SEG[SEG.length - 1]; }
 
   function render(u) {
@@ -321,31 +331,32 @@
     var sg = findSeg(u), t = clamp((u - sg.u0) / sg.d, 0, 1), FULL = box('full');
     if (sg.t === 'hold' || sg.t === 'move') {
       var bx = box(sg.box), asp = bx[3] / bx[2];
-      var cam = sg.t === 'hold' ? resolve(sg.s, sg.cam, bx) : mixRect(resolve(sg.s, sg.from, bx), resolve(sg.s, sg.to, bx), sg.box ? t : ease(t), asp);
+      var cam = sg.t === 'hold' ? resolve(sg.s, sg.cam, bx) : mixRect(resolve(sg.s, sg.from, bx), resolve(sg.s, sg.to, bx), sg.box || sg.lin ? t : soft(t), asp);
       if (sg.t === 'hold') { var kk = 1 - .02 * Math.sin(Math.PI * t); cam = { x: cam.x + cam.w * (1 - kk) / 2, y: cam.y + cam.h * (1 - kk) / 2, w: cam.w * kk, h: cam.h * kk }; }
       place(sg.s, cam, bx, 1, 2);
     } else if (sg.t === 'in') {
       var A0 = resolve(sg.a, sg.from, FULL), P = resolve(sg.a, sg.portal, FULL), B0 = resolve(sg.b, sg.to, FULL);
-      var ca = mixRect(A0, P, ease(t), H / W);
+      var ca = mixRect(A0, P, soft(t), H / W);
       var cb = mapTo(B0, scr(P, ca));
-      place(sg.a, ca, FULL, 1 - sm(seg(t, .78, 1)), 2);
-      place(sg.b, cb, FULL, sm(seg(t, .3, .8)), 4);
+      place(sg.a, ca, FULL, 1 - sm(seg(t, .78, 1)), 2, null, .7 * sm(seg(t, .45, .95)));
+      place(sg.b, cb, FULL, sm(seg(t, .3, .8)), 4, null, .7 * (1 - sm(seg(t, .3, .9))));
     } else if (sg.t === 'out') {
       var A1 = resolve(sg.a, sg.from, FULL), P2 = resolve(sg.b, sg.portal, FULL), B1 = resolve(sg.b, sg.to, FULL);
-      var cb2 = mixRect(P2, B1, ease(t), H / W);
+      var cb2 = mixRect(P2, B1, soft(t), H / W);
       var ca2 = mapTo(A1, scr(P2, cb2));
-      place(sg.b, cb2, FULL, sm(seg(t, 0, .25)), 2);
-      place(sg.a, ca2, FULL, 1 - sm(seg(t, .12, .78)), 4);
+      place(sg.b, cb2, FULL, sm(seg(t, 0, .25)), 2, null, .7 * (1 - sm(seg(t, .15, .8))));
+      place(sg.a, ca2, FULL, 1 - sm(seg(t, .12, .78)), 4, null, .7 * sm(seg(t, .05, .65)));
     } else if (sg.t === 'x') {
       [['A', 2], ['B', 4]].forEach(function (pair) {
-        var L1 = sg[pair[0]], te = ease(t);
+        var L1 = sg[pair[0]], te = L1.lin ? t : soft(t);
         var b0 = box(L1.box), b1 = L1.box1 ? box(L1.box1) : b0, bxx = mixBox(b0, b1, te);
         var c = mixRect(resolve(L1.s, L1.c0, bxx), resolve(L1.s, L1.c1, bxx), te, bxx[3] / bxx[2]);
         var op = 1;
         if (L1.o) op = pair[0] === 'A' ? 1 - sm(seg(t, L1.o[0], L1.o[1])) : sm(seg(t, L1.o[0], L1.o[1]));
         var w = L1.wipe ? ease(seg(t, L1.wipe[0], L1.wipe[1])) : null;
         if (w === 0) op = 0;
-        place(L1.s, c, bxx, op, pair[1], w);
+        var bl = L1.blur ? Math.pow(Math.sin(Math.PI * seg(t, .04, .96)), 1.6) : 0;
+        place(L1.s, c, bxx, op, pair[1], w, bl);
       });
     }
     for (var k2 in layers) {
@@ -440,6 +451,7 @@
     if (!force && nw === W && Math.abs(nh - H) < 120) return;
     W = nw; H = stage.clientHeight || nh; VH = nh / 100;
     layout = W / H >= .85 ? 'd' : 'm';
+    BLUR = REDUCE ? 0 : layout === 'd' ? 7 : 3.5;
     journey.style.height = (TOTAL * VH + nh) + 'px';
     measureLogo();
   }
@@ -451,7 +463,7 @@
   }
   function loop() {
     if (!running) return;
-    cur += (target - cur) * (REDUCE ? 1 : .11);
+    cur += (target - cur) * (REDUCE ? 1 : .085);
     if (Math.abs(target - cur) < .002) cur = target;
     render(cur);
     if (cur === target) { running = false; return; }
