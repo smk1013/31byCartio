@@ -399,3 +399,19 @@ button.ov:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
   .layers, .cap-hero h1, .cap-hero .cap-row > *, .nav { transition: none !important; }
   html.intro .layers, html.intro .cap-hero h1, html.intro .cap-hero .cap-row > *, html.intro .nav { opacity: 1 !important; transform: none !important; }
 }
+
+/* hidden details that are links */
+a.ov { text-decoration: none; cursor: pointer; }
+.ov-lcd { transform-origin: 50% 50%; }
+.ov-odo { padding: 3px 4px 3px 3px; }
+
+/* every contact detail is a link */
+.where a, .foot-where a { color: var(--bone); text-decoration: underline; text-decoration-color: rgba(211,180,138,.5); text-underline-offset: 3px; transition: text-decoration-color .2s, color .2s; }
+.where a:hover, .foot-where a:hover { color: var(--gold-hi); text-decoration-color: var(--gold); }
+.where { color: var(--bone-2); }
+.foot-contact, .foot-social { display: flex; flex-wrap: wrap; gap: 8px 22px; }
+.foot-row2 { border-top: 0; padding-top: 0; align-items: center; }
+.foot-where { color: rgba(237,230,218,.55); font-size: 15px; }
+.foot a:hover { color: var(--gold-hi); }
+.menu-social { display: flex; flex-wrap: wrap; gap: 8px 18px; margin: -8px 0 22px; }
+.menu-social a { color: var(--gold-hi); text-underline-offset: 3px; overflow-wrap: anywhere; }

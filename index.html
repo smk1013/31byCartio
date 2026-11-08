@@ -23,7 +23,7 @@
 <link rel="stylesheet" href="assets/css/site.css">
 <script>document.documentElement.classList.add('intro')</script>
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"AutoRepair","name":"31 by Cartio","url":"https://31bycartio.com/","logo":"https://31bycartio.com/assets/img/logo-badge-1600.png","image":"https://31bycartio.com/assets/img/og.jpg","telephone":"+1-818-395-5765","email":"alec@31bycartio.com","description":"BMW 8 Series (E31) paint, bodywork, engine rebuilds, power steering, interiors, sunroofs, glass, wiring, electronics and sales.","areaServed":["Southern California","South Florida","United States"],"sameAs":["https://www.instagram.com/31bycartio/","https://www.youtube.com/@31bycartio"]}
+{"@context":"https://schema.org","@type":"AutoRepair","name":"31 by Cartio","url":"https://31bycartio.com/","logo":"https://31bycartio.com/assets/img/logo-badge-1600.png","image":"https://31bycartio.com/assets/img/og.jpg","telephone":"+1-818-395-5765","email":"alec@31bycartio.com","description":"BMW 8 Series (E31) paint, bodywork, engine rebuilds, power steering, interiors, sunroofs, glass, wiring, electronics and sales.","areaServed":["Southern California","South Florida","United States"],"sameAs":["https://www.instagram.com/31bycartio/","https://www.facebook.com/31bycartio","https://www.youtube.com/@31bycartio"]}
 </script>
 </head>
 <body>
@@ -153,13 +153,13 @@
           <a class="tile" data-bind="tel" href="tel:+18183955765"><b>Call</b><span data-bind="phone_display">818-395-5765</span></a>
           <a class="tile" data-bind="sms" href="sms:+18183955765"><b>Text</b><span data-bind="phone_display">818-395-5765</span></a>
           <a class="tile" data-bind="mailto" href="mailto:alec@31bycartio.com"><b>Email</b><span data-bind="email">alec@31bycartio.com</span></a>
-          <a class="tile" data-bind="ig_dm" href="https://ig.me/m/31bycartio" target="_blank" rel="noopener"><b>Instagram</b><span>Send a message</span></a>
-          <a class="tile" data-bind="fb_dm" href="https://m.me/31bycartio" target="_blank" rel="noopener"><b>Facebook</b><span>Send a message</span></a>
-          <a class="tile" data-bind="yt" href="https://www.youtube.com/@31bycartio" target="_blank" rel="noopener"><b>YouTube</b><span>@<span data-bind="youtube">31bycartio</span></span></a>
+          <a class="tile" data-bind="ig" href="https://www.instagram.com/31bycartio/" target="_blank" rel="noopener"><b>Instagram</b><span data-handle="instagram">@31bycartio</span></a>
+          <a class="tile" data-bind="fb" href="https://www.facebook.com/31bycartio" target="_blank" rel="noopener"><b>Facebook</b><span data-handle="facebook">/31bycartio</span></a>
+          <a class="tile" data-bind="yt" href="https://www.youtube.com/@31bycartio" target="_blank" rel="noopener"><b>YouTube</b><span data-handle="youtube">@31bycartio</span></a>
         </div>
         <div class="contact-row">
           <button class="btn btn-gold" type="button" data-open="form">Send a message</button>
-          <p class="where" id="locations-line">Southern California and South Florida</p>
+          <p class="where" id="locations-line" data-locations><a href="https://www.google.com/maps/search/?api=1&amp;query=Southern%20California" target="_blank" rel="noopener">Southern California</a> and <a href="https://www.google.com/maps/search/?api=1&amp;query=South%20Florida" target="_blank" rel="noopener">South Florida</a></p>
         </div>
       </div>
     </div>
@@ -182,9 +182,13 @@
         <button type="button" data-open="story">Our story</button>
         <button type="button" data-open="form">Contact</button>
       </nav>
-      <p><a data-bind="tel" href="tel:+18183955765"><span data-bind="phone_display">818-395-5765</span></a> &nbsp; <a data-bind="mailto" href="mailto:alec@31bycartio.com"><span data-bind="email">alec@31bycartio.com</span></a></p>
+      <p class="foot-contact"><a data-bind="tel" href="tel:+18183955765"><span data-bind="phone_display">818-395-5765</span></a><a data-bind="mailto" href="mailto:alec@31bycartio.com"><span data-bind="email">alec@31bycartio.com</span></a></p>
     </div>
-    <p class="legal">© <span id="year">2026</span> 31 by Cartio. An independent BMW 8 Series specialist, not affiliated with BMW AG. BMW and model names are trademarks of BMW AG. Studio images are illustrations. <a class="team" href="/admin/">Team login</a></p>
+    <div class="foot-row foot-row2">
+      <p class="foot-social"><a data-bind="ig" href="https://www.instagram.com/31bycartio/" target="_blank" rel="noopener">Instagram</a><a data-bind="fb" href="https://www.facebook.com/31bycartio" target="_blank" rel="noopener">Facebook</a><a data-bind="yt" href="https://www.youtube.com/@31bycartio" target="_blank" rel="noopener">YouTube</a></p>
+      <p class="foot-where" data-locations><a href="https://www.google.com/maps/search/?api=1&amp;query=Southern%20California" target="_blank" rel="noopener">Southern California</a> and <a href="https://www.google.com/maps/search/?api=1&amp;query=South%20Florida" target="_blank" rel="noopener">South Florida</a></p>
+    </div>
+    <p class="legal">© <span id="year">2026</span> 31 by Cartio. An independent BMW 8 Series specialist, not affiliated with BMW AG. BMW and model names are trademarks of BMW AG. Studio images are illustrations. <a class="team" href="admin/">Team login</a></p>
   </div>
 </footer>
 

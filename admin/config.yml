@@ -85,5 +85,6 @@ collections:
             fields:
               - { name: name, label: Name, widget: string }
               - { name: note, label: Note, widget: string, required: false }
+              - { name: address, label: "Street address (optional)", widget: string, required: false, hint: "If filled in, tapping the location on the site opens this address in Maps. Leave empty to show the general area." }
           - { name: logo, label: "Replace logo (optional)", widget: image, required: false, choose_url: false, hint: "Leave empty to use the built-in logo." }
           - { name: announcement, label: Announcement, widget: hidden, required: false }

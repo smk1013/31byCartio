@@ -40,11 +40,13 @@
   function L() {
     return {
       tel: 'tel:' + S.phone, sms: 'sms:' + (S.text_phone || S.phone), mailto: 'mailto:' + S.email,
-      ig: 'https://www.instagram.com/' + S.instagram + '/', ig_dm: 'https://ig.me/m/' + S.instagram,
-      fb: 'https://www.facebook.com/' + S.facebook, fb_dm: 'https://m.me/' + S.facebook,
+      // Profile pages open everywhere (app or browser, signed in or not); DM deep links don't.
+      ig: 'https://www.instagram.com/' + S.instagram + '/', ig_dm: 'https://www.instagram.com/' + S.instagram + '/',
+      fb: 'https://www.facebook.com/' + S.facebook, fb_dm: 'https://www.facebook.com/' + S.facebook,
       yt: 'https://www.youtube.com/@' + S.youtube
     };
   }
+  function mapUrl(l) { return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(l.address || l.name); }
   function applySettings(s) {
     Object.keys(s || {}).forEach(function (k) { if (s[k] !== '' && s[k] != null) S[k] = s[k]; });
     if (s && s.facebook === '') S.facebook = '';
@@ -55,7 +57,11 @@
       else if (typeof S[k] === 'string') el.textContent = S[k];
     });
     if (!S.facebook) $$('[data-bind="fb"],[data-bind="fb_dm"]').forEach(function (a) { a.style.display = 'none'; });
-    if (Array.isArray(S.locations) && S.locations.length) $('#locations-line').textContent = S.locations.map(function (l) { return l.name; }).join(' and ');
+    if (Array.isArray(S.locations) && S.locations.length) {
+      var locHtml = S.locations.map(function (l) { return '<a href="' + esc(mapUrl(l)) + '" target="_blank" rel="noopener">' + esc(l.name) + '</a>'; }).join(' and ');
+      $$('[data-locations]').forEach(function (el) { el.innerHTML = locHtml; });
+    }
+    $$('[data-handle]').forEach(function (el) { var k = el.getAttribute('data-handle'); if (S[k]) el.textContent = (k === 'facebook' ? '/' : '@') + S[k]; });
     if (S.logo) $$('[data-logo],[data-logo-large]').forEach(function (i) { i.src = imgUrl(S.logo, 1600); });
     var digits = String(S.phone_display || '').replace(/\D/g, '');
     if (digits.length >= 10) { var d = digits.slice(-10); setOdo(d.slice(0, 6), d.slice(6)); }
@@ -68,7 +74,8 @@
   function vs(x, y0, y1) { var t = 1.05; return [[x, y0], [x + t, y0 + t], [x + t, y1 - t], [x, y1], [x - t, y1 - t], [x - t, y0 + t]]; }
   var GEOM = { a: hs(2.4, 7.6, 1.3), g: hs(2.4, 7.6, 9), d: hs(2.4, 7.6, 16.7), f: vs(1.7, 1.9, 8.4), b: vs(8.3, 1.9, 8.4), e: vs(1.7, 9.6, 16.1), c: vs(8.3, 9.6, 16.1) };
   function poly(pts, dx) { return pts.map(function (p) { return (p[0] + dx).toFixed(2) + ',' + p[1].toFixed(2); }).join(' '); }
-  function seg7(str) {
+  function seg7(str, slots, vbw) {
+    if (slots) str = (new Array(slots + 1).join(' ') + str).slice(-slots);
     var x = 0, out = '';
     for (var i = 0; i < str.length; i++) {
       var ch = str[i];
@@ -77,9 +84,10 @@
       'abcdefg'.split('').forEach(function (k) { out += '<polygon class="' + (on.indexOf(k) >= 0 ? 'on' : 'off') + '" points="' + poly(GEOM[k], x) + '"/>'; });
       x += 11;
     }
-    return '<svg class="seg7" viewBox="-0.5 0 ' + (x + .5) + ' 18" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><g transform="skewX(-5) translate(1.2 0)">' + out + '</g></svg>';
+    var vw = vbw || x + .5;
+    return '<svg class="seg7" viewBox="' + (x - vw) + ' 0 ' + vw + ' 18" preserveAspectRatio="xMaxYMid meet" aria-hidden="true"><g transform="skewX(-5) translate(1.2 0)">' + out + '</g></svg>';
   }
-  function setOdo(a, b) { var o1 = $('#odo-a'), o2 = $('#odo-b'); if (o1) o1.innerHTML = seg7(a); if (o2) o2.innerHTML = seg7(b); }
+  function setOdo(a, b) { var o1 = $('#odo-a'), o2 = $('#odo-b'); if (o1) o1.innerHTML = seg7(a, 6, 66.5); if (o2) o2.innerHTML = seg7(b, 5, 61); }
 
   /* ================================ SCENES ================================ */
   // w/h = the still's original pixel size; every coordinate below uses those pixels.
@@ -107,9 +115,9 @@
   };
   var OVERLAYS = {
     rear: '<div class="ov ov-plate" data-detail="plate" style="left:1233px;top:410px;width:154px;height:66px"><span>31 CARTIO</span><i>E31 SPECIALIST</i></div>',
-    cluster: '<button class="ov ov-odo" data-act="tel" aria-label="Call us" style="left:982px;top:413px;width:66px;height:29px" id="odo-a"></button>' +
-      '<button class="ov ov-odo" data-act="tel" aria-label="Call us" style="left:1059px;top:414px;width:61px;height:29px" id="odo-b"></button>',
-    console: '<button class="ov ov-lcd" data-act="obc" aria-label="Contact details" style="left:246px;top:515px;width:378px;height:48px"><span id="obc-text">31 BY CARTIO</span><i>ST</i></button>',
+    cluster: '<a class="ov ov-odo" data-bind="tel" href="tel:+18183955765" aria-label="Call us" style="left:982px;top:413px;width:66px;height:29px" id="odo-a"></a>' +
+      '<a class="ov ov-odo" data-bind="tel" href="tel:+18183955765" aria-label="Call us" style="left:1059px;top:414px;width:61px;height:29px" id="odo-b"></a>',
+    console: '<a class="ov ov-lcd" id="obc" href="https://www.instagram.com/31bycartio/" target="_blank" rel="noopener" aria-label="31 by Cartio on Instagram" style="left:189px;top:514px;width:442px;height:51px;transform:rotate(-1deg)"><span id="obc-text">31 BY CARTIO</span><i>ST</i></a>',
     backseat: '<div class="ov ov-mirror" style="left:726px;top:127px;width:226px;height:42px"><span>31 BY CARTIO</span></div>' +
       '<div class="ov ov-emboss" style="left:196px;top:628px;width:270px;height:116px"><i class="e-sh"></i><i class="e-hi"></i><i class="e-base"></i></div>'
   };
@@ -470,12 +478,9 @@
     if (g) { e.preventDefault(); jumpTo(g.dataset.go); return; }
     var o = e.target.closest('[data-open]');
     if (o) { e.preventDefault(); openPanel(o.dataset.open, o.dataset.need); return; }
-    var a = e.target.closest('[data-act]');
-    if (a) {
-      var act = a.dataset.act, links = L();
-      if (act === 'tel') { markFound('odo'); location.href = links.tel; }
-      if (act === 'obc') { markFound('radio'); var m = OBC[obcIdx]; if (m.href === 'ig') window.open(links.ig, '_blank', 'noopener'); else location.href = links[m.href]; }
-    }
+    // The odometer and radio are real links; tapping them also counts as finding them.
+    if (e.target.closest('.ov-odo')) markFound('odo');
+    if (e.target.closest('.ov-lcd')) markFound('radio');
     var c = e.target.closest('[data-car]');
     if (c) { e.preventDefault(); openPanel('car', c.dataset.car); }
   });
@@ -484,20 +489,26 @@
   var OBC = [], obcIdx = 0;
   function buildObc() {
     OBC = [
-      { t: '31 BY CARTIO', href: 'ig' },
-      { t: 'CALL ' + String(S.phone_display).replace(/-/g, ' '), href: 'tel' },
-      { t: String(S.email).toUpperCase(), href: 'mailto' },
-      { t: 'IG @' + String(S.instagram).toUpperCase(), href: 'ig' }
+      { t: '31 BY CARTIO', href: 'ig', label: '31 by Cartio on Instagram' },
+      { t: 'CALL ' + String(S.phone_display).replace(/-/g, ' '), href: 'tel', label: 'Call ' + S.phone_display },
+      { t: String(S.email).toUpperCase(), href: 'mailto', label: 'Email ' + S.email },
+      { t: 'IG @' + String(S.instagram).toUpperCase(), href: 'ig', label: 'Instagram @' + S.instagram }
     ];
+    setObcLink();
   }
   buildObc();
   setInterval(function () {
     var el = $('#obc-text'); if (!el) return;
     obcIdx = (obcIdx + 1) % OBC.length;
     el.classList.add('flip');
-    setTimeout(function () { el.textContent = OBC[obcIdx].t; el.classList.remove('flip'); fitObc(); }, 160);
+    setTimeout(function () { el.textContent = OBC[obcIdx].t; el.classList.remove('flip'); fitObc(); setObcLink(); }, 160);
   }, 2400);
-  function fitObc() { var el = $('#obc-text'); if (!el) return; el.style.transform = 'none'; var k = Math.min(1, 330 / (el.scrollWidth || 330)); el.style.transform = 'scaleX(' + k.toFixed(3) + ')'; }
+  function setObcLink() {
+    var a = $('#obc'), m = OBC[obcIdx]; if (!a || !m) return;
+    a.href = L()[m.href]; a.setAttribute('aria-label', m.label);
+    if (m.href === 'ig') { a.target = '_blank'; a.rel = 'noopener'; } else { a.removeAttribute('target'); a.removeAttribute('rel'); }
+  }
+  function fitObc() { var el = $('#obc-text'); if (!el) return; el.style.transform = 'none'; var k = Math.min(1, 380 / (el.scrollWidth || 380)); el.style.transform = 'scaleX(' + k.toFixed(3) + ')'; }
   setOdo('818395', '5765');
   $('#year').textContent = new Date().getFullYear();
 
@@ -574,18 +585,19 @@
       { t: 'Call ' + S.phone_display, k: 'call phone number ring', href: l.tel },
       { t: 'Text ' + S.phone_display, k: 'text sms message', href: l.sms },
       { t: 'Email ' + S.email, k: 'email mail', href: l.mailto },
-      { t: 'Instagram message', k: 'instagram dm ig message', href: l.ig_dm, ext: 1 },
-      { t: 'YouTube', k: 'youtube videos channel', href: l.yt, ext: 1 },
+      { t: 'Instagram @' + S.instagram, k: 'instagram dm ig message social', href: l.ig, ext: 1 },
+      { t: 'YouTube @' + S.youtube, k: 'youtube videos channel', href: l.yt, ext: 1 },
       { t: 'Send a message', k: 'form contact message quote estimate', open: 'form' }
     ];
-    if (S.facebook) items.splice(4, 0, { t: 'Facebook message', k: 'facebook messenger fb message', href: l.fb_dm, ext: 1 });
+    if (S.facebook) items.splice(4, 0, { t: 'Facebook', k: 'facebook messenger fb message social page', href: l.fb, ext: 1, d: 'facebook.com/' + S.facebook });
+    (S.locations || []).forEach(function (loc) { items.push({ t: loc.name, k: 'location address where directions map shop ' + (loc.note || ''), href: mapUrl(loc), ext: 1, d: [loc.note, 'Open in Maps'].filter(Boolean).join(' · ') }); });
     return items;
   }
   function index() {
     var idx = [];
     SERVICES.forEach(function (s) { idx.push({ g: 'Services', t: s.t, k: s.k, go: s.go, open: s.open, d: s.d }); });
     CARS.forEach(function (c) { idx.push({ g: 'Cars', t: title(c) + (c.paint ? ', ' + c.paint : ''), k: [c.model, c.paint, c.year, c.status, STATUS[c.status], 'car cars sale', c.location].join(' '), car: c.id, d: STATUS[c.status] }); });
-    contacts().forEach(function (c) { idx.push({ g: 'Contact', t: c.t, k: c.k, href: c.href, ext: c.ext, open: c.open }); });
+    contacts().forEach(function (c) { idx.push({ g: 'Contact', t: c.t, k: c.k, href: c.href, ext: c.ext, open: c.open, d: c.d }); });
     [['Our story', 'story about alec cartio founders history', 'story'], ['All cars for sale', 'inventory cars sale all list', 'inventory'], ['Hidden details', 'hidden easter eggs details secrets find', 'details'], ['Every service', 'services list all what do you do', 'services']]
       .forEach(function (p) { idx.push({ g: 'Pages', t: p[0], k: p[1], open: p[2] }); });
     return idx;
@@ -633,6 +645,7 @@
       pBody.innerHTML = '<button class="q q-btn" type="button" data-open="search">Search services, cars and contact</button>' +
         '<nav class="menu-tour" aria-label="Tour">' + CHAPTERS.map(function (c) { return '<a href="#" data-go="' + c[0] + '">' + names[c[0]] + '</a>'; }).join('') + '</nav>' +
         '<div class="menu-links"><a href="#" data-open="inventory">All cars for sale</a><a href="#" data-open="services">Every service</a><a href="#" data-open="story">Our story</a><a href="#" data-open="details">Hidden details</a></div>' +
+        '<div class="menu-social"><a href="' + L().mailto + '">' + esc(S.email) + '</a><a href="' + L().ig + '" target="_blank" rel="noopener">Instagram @' + esc(S.instagram) + '</a>' + (S.facebook ? '<a href="' + L().fb + '" target="_blank" rel="noopener">Facebook</a>' : '') + '<a href="' + L().yt + '" target="_blank" rel="noopener">YouTube</a></div>' +
         '<div class="menu-cta"><a class="btn btn-gold" href="' + L().tel + '">Call ' + esc(S.phone_display) + '</a><a class="btn btn-line" href="' + L().sms + '">Text us</a><a class="btn btn-line" href="#" data-open="form">Send a message</a></div>';
     },
     services: function () {
@@ -666,7 +679,7 @@
       pBody.innerHTML = '<div class="gal"><div class="track" id="track">' + slides + '</div>' + (ph.length > 1 ? '<button class="gnav gp" type="button" aria-label="Previous photo">‹</button><button class="gnav gn" type="button" aria-label="Next photo">›</button><span class="gcount" id="gcount">1 / ' + ph.length + '</span>' : '') + '</div>' +
         (ph.length > 1 ? '<div class="thumbs" id="thumbs">' + ph.map(function (p, i) { return '<button type="button" data-i="' + i + '" aria-label="Photo ' + (i + 1) + '"' + (i ? '' : ' aria-current="true"') + '><img src="' + esc(imgUrl(asset(p), 240)) + '" data-raw="' + esc(asset(p)) + '" alt="" loading="lazy"></button>'; }).join('') + '</div>' : '') +
         '<div class="car-info"><div><h2>' + esc(title(c)) + '</h2>' + (c.headline ? '<p class="car-lead">' + esc(c.headline) + '</p>' : '') + '<p class="car-price">' + esc(price(c)) + '</p>' +
-        (c.status !== 'sold' ? '<div class="car-cta"><a class="btn btn-gold" href="' + l.tel + '">Call about this car</a><a class="btn btn-line" href="' + l.sms + '">Text</a><a class="btn btn-line" href="' + l.ig_dm + '" target="_blank" rel="noopener">Instagram</a><a class="btn btn-line" href="' + mail + '">Email</a></div>' : '<div class="car-cta"><a class="btn btn-line" href="#" data-open="form">Ask us to find one like it</a></div>') +
+        (c.status !== 'sold' ? '<div class="car-cta"><a class="btn btn-gold" href="' + l.tel + '">Call about this car</a><a class="btn btn-line" href="' + l.sms + '">Text</a><a class="btn btn-line" href="' + l.ig + '" target="_blank" rel="noopener">Instagram</a><a class="btn btn-line" href="' + mail + '">Email</a></div>' : '<div class="car-cta"><a class="btn btn-line" href="#" data-open="form">Ask us to find one like it</a></div>') +
         (c.description ? '<p class="car-desc">' + esc(c.description) + '</p>' : '') +
         ((c.highlights || []).length ? '<ul class="car-hl">' + c.highlights.map(function (h) { return '<li>' + esc(h) + '</li>'; }).join('') + '</ul>' : '') +
         (c.sample ? '<p class="car-sample">Sample listing. Replace it with a real car and its real photos in the editor before launch.</p>' : '') +
@@ -731,7 +744,7 @@
           // No form handler on this host: hand the message to the visitor's email app instead.
           var fd = new FormData(form), subj = 'Inquiry' + (fd.get('car') ? ': ' + fd.get('car') : '') + ' (' + fd.get('need') + ')';
           var body = fd.get('message') + '\n\n' + fd.get('name') + '\n' + fd.get('contact') + (fd.get('car') ? '\nCar: ' + fd.get('car') : '');
-          window.open(L().mailto + '?subject=' + encodeURIComponent(subj) + '&body=' + encodeURIComponent(body), '_top');
+          location.href = L().mailto + '?subject=' + encodeURIComponent(subj) + '&body=' + encodeURIComponent(body);
           st.textContent = 'Opening your email app with the message filled in. If nothing opens, call or text ' + S.phone_display + '.';
           return;
         }
