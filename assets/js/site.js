@@ -831,9 +831,18 @@
         '<div><dt>850i</dt><dd><span>5.0 V12, 1990 to 1994<small>Includes the first 850Ci, as the car was renamed in 1992</small></span><b>20,072</b></dd></div>' +
         '<div><dt>850Ci</dt><dd><span>5.4 V12, 1994 to 1999</span><b>1,218</b></dd></div>' +
         '<div><dt>850CSi</dt><dd><span>5.6 S70 V12, 1992 to 1996</span><b>1,510</b></dd></div>' +
+        '<div class="st-sub"><dt>All 850s</dt><dd><span>1990 to 1999</span><b>22,800</b></dd></div>' +
         '<div><dt>840Ci</dt><dd><span>4.0 V8, 1993 to 1996</span><b>4,728</b></dd></div>' +
         '<div><dt>840Ci</dt><dd><span>4.4 V8, 1996 to 1999</span><b>3,075</b></dd></div>' +
-        '<div class="st-total"><dt>All E31s</dt><dd><span>About</span><b>30,600</b></dd></div>' +
+        '<div class="st-sub"><dt>All 840Ci</dt><dd><span>1993 to 1999</span><b>7,803</b></dd></div>' +
+        '<div class="st-total"><dt>All E31s</dt><dd><span>Including 18 830i</span><b>30,621</b></dd></div>' +
+        '</dl>' +
+        '<h4>Built for the United States</h4><dl class="specs st-specs st-prod">' +
+        '<div><dt>850i</dt><dd><span>1990 to 1994</span><b>4,194</b></dd></div>' +
+        '<div><dt>850Ci</dt><dd><span>1994 to 1997</span><b>363</b></dd></div>' +
+        '<div><dt>850CSi</dt><dd><span>1993 to 1995</span><b>225</b></dd></div>' +
+        '<div><dt>840Ci</dt><dd><span>1993 to 1999</span><b>2,450</b></dd></div>' +
+        '<div class="st-total"><dt>US cars</dt><dd><span>About</span><b>7,232</b></dd></div>' +
         '</dl></div>' +
         '</article>';
       reveal();

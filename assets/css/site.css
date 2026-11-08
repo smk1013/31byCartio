@@ -579,3 +579,8 @@ html { scroll-behavior: auto; }
 .st-prod .st-total b { color: var(--gold-hi); }
 .st-prod .st-total dt { color: var(--gold); }
 @media (max-width: 700px) { .st-specs div { grid-template-columns: 90px 1fr; font-size: 16px; } .st-prod b { font-size: 22px; } }
+
+.st-prod .st-sub dt, .st-prod .st-sub b { color: var(--gold-hi); }
+.st-prod .st-sub { background: rgba(211,180,138,.05); }
+.st-facts dl.st-prod + h4 { margin-top: 0; }
+.st-facts .st-prod { margin-bottom: 44px; }
