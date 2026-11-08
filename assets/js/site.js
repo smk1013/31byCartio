@@ -687,8 +687,12 @@
       }
       $('#share').onclick = function (e) {
         var url = location.href.split('#')[0] + '#car-' + c.id, b = e.target;
-        if (navigator.share) { navigator.share({ title: t + ' | 31 by Cartio', text: t + ', ' + price(c), url: url }).catch(function () {}); return; }
-        if (navigator.clipboard) navigator.clipboard.writeText(url).then(function () { b.textContent = 'Link copied'; }, function () { b.textContent = url; }); else b.textContent = url;
+        var copy = function () {
+          if (navigator.clipboard) navigator.clipboard.writeText(url).then(function () { b.textContent = 'Link copied'; }, function () { b.textContent = url; }); else b.textContent = url;
+        };
+        // The share sheet can be blocked (embedded views); fall back to copying the link.
+        if (navigator.share) { navigator.share({ title: t + ' | 31 by Cartio', text: t + ', ' + price(c), url: url }).catch(function (err) { if (!err || err.name !== 'AbortError') copy(); }); return; }
+        copy();
       };
     },
     story: function () {
